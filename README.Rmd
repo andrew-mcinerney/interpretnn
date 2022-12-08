@@ -1,19 +1,30 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
 <img src="man/figures/logo.png" align="right" height="139" />
 
 # statnn
 
 <!-- badges: start -->
-
 [![R-CMD-check](https://github.com/andrew-mcinerney/statnnet/workflows/R-CMD-check/badge.svg)](https://github.com/andrew-mcinerney/statnnet/actions)
 <!-- badges: end -->
 
+
 ## Installation
 
-You can install the development version of statnn from
-[GitHub](https://github.com/) with:
+You can install the development version of statnn from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -22,25 +33,23 @@ devtools::install_github("andrew-mcinerney/statnn")
 
 ## statnnet()
 
-The primary function in this package is `statnn()`. It creates a
-statistically-based version of an existing `nnet` object.
+The primary function in this package is `statnn()`.
+It creates a statistically-based version of an existing `nnet` object.
 
-``` r
+```{r, eval = FALSE}
 library(statnn)
 stnn <- statnn(nnet, X)
 ```
 
 A useful summary table can be generated using
-
-``` r
+```{r, eval = FALSE}
 summary(stnn)
 ```
 
 and covariate-effect plots can be created using
-
-``` r
+```{r, eval = FALSE}
 plot(stnn, conf_int = TRUE)
 ```
 
-More information about these functions and their arguments can be found
-in the function documentation.
+More information about these functions and their arguments can be found in the
+function documentation.

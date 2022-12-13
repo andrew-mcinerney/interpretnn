@@ -1,5 +1,6 @@
 library(nnet)
 library(keras)
+library(neuralnet)
 
 # prep data ---------------------------------------------------------------
 
@@ -59,3 +60,30 @@ sum((nn_pred(X, W_keras, q) - y)^2)
 
 stnn <- statnn(model, X, y)
 summary(stnn)
+
+# neuralnet ---------------------------------------------------------------
+
+neural_model <- neuralnet(y ~ ., data = data.frame(X, y), hidden = q,
+                          err.fct = "sse", act.fct = "logistic",
+                          linear.output = TRUE)
+
+summary(neural_model)
+neural_model
+print(neural_model)
+
+neural_model$result.matrix[1, ] * 2
+neural_weights <- c(as.vector(neural_model$weights[[1]][[1]]),
+                    neural_model$weights[[1]][[2]])
+
+
+yhat <- nn_pred(X, neural_weights, q)
+neural_model$net.result[[1]] - yhat
+
+sum((yhat - y)^2)
+
+# using statnn function
+
+stnn <- statnn(neural_model)
+summary(stnn)
+
+plot(stnn)

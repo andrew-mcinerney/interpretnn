@@ -3,7 +3,7 @@
 #'
 #' @param X Data
 #' @param W Weight vector
-#' @param q Number of hidden nodes
+#' @param q Number of hidden nodes (use vector if more than one layer)
 #' @param output Activation function for output unit: `"identity"` (default) or
 #'  `"sigmoid"`
 #' @return Prediction for given inputs
@@ -11,18 +11,33 @@
 nn_pred <- function(X, W, q, output = "identity") {
   n <- nrow(X)
   p <- ncol(X)
-
-  k <- (p + 2) * q + 1
-
+  
+  k <- sum(c(p + 1, q + 1) * c(q, 1))
+  
+  layer_nodes <- c(0, cumsum(c(p + 1, q + 1) * c(q, 1)))
+  
   if (length(W) == k) {
+    
     X <- cbind(rep(1, n), X)
-
-    h_input <- X %*% t(matrix(W[1:((p + 1) * q)], nrow = q, byrow = TRUE))
-
-    h_act <- cbind(rep(1, n), sigmoid(h_input))
-
+    
+    temp <- X
+    
+    for(i in 1:length(q)) {
+      
+      h_input <- temp %*% t(matrix(W[(layer_nodes[i] + 1):layer_nodes[i + 1]],
+                                   nrow = q[i], byrow = TRUE))
+      
+      h_act <- cbind(rep(1, n), sigmoid(h_input))
+      
+      temp <- h_act
+    }
+    
+    
     if (output == "identity") {
-      y_hat <- h_act %*% matrix(W[c((length(W) - q):length(W))], ncol = 1)
+      y_hat <- h_act %*% 
+        matrix(W[(layer_nodes[length(layer_nodes) - 1] + 1):
+                   layer_nodes[length(layer_nodes)]],
+               ncol = 1)
     } else if (output == "sigmoid") {
       y_hat <- sigmoid(
         h_act %*% matrix(W[c((length(W) - q):length(W))], ncol = 1)
@@ -35,7 +50,7 @@ nn_pred <- function(X, W, q, output = "identity") {
         )
       )
     }
-
+    
     return(y_hat)
   } else {
     stop(sprintf(
@@ -43,6 +58,22 @@ nn_pred <- function(X, W, q, output = "identity") {
       %s weights (%s weights supplied).", k, length(W)
     ))
   }
+}
+
+#' Neural network prediction
+#'
+#'
+#' @param X Data
+#' @param W Weight vector
+#' @param q Number of hidden nodes
+#' @param output Activation function for output unit: `"identity"` (default) or
+#'  `"sigmoid"`
+#' @return Prediction for given inputs
+#' @export
+nn_rss <- function(W, X, y, q, output = "identity") {
+  pred <- nn_pred(X, W, q, output)
+  
+  return(sum((pred - y)^2))
 }
 
 #' Sigmoid activation function

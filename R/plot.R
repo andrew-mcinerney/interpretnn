@@ -1,5 +1,5 @@
 #' @export
-plot.statnnet <-
+plot.statnn <-
   function(x, which = c(1L:ncol(x$X)), x_axis_r = c(-3, 3), x_axis_l = 101,
            conf_int = FALSE, alpha = 0.05, B = x$B, method = c(
              "mlesim",
@@ -19,8 +19,8 @@ plot.statnnet <-
            sub.caption = NULL, main = "",
            ask = prod(graphics::par("mfcol")) < length(which) && grDevices::dev.interactive(), ...,
            label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25) {
-    if (!inherits(x, "statnnet")) {
-      stop("use only with \"statnnet\" objects")
+    if (!inherits(x, "statnn")) {
+      stop("use only with \"statnn\" objects")
     }
 
     if (!is.numeric(which) || any(which < 1) || any(which > ncol(x$X))) {
@@ -48,7 +48,7 @@ plot.statnnet <-
     cov_effs <- lapply(
       1:ncol(x$X),
       function(iter) {
-        pdp_effect(x$wts, x$X, x$n[2],
+        pdp_effect(x$weights, x$X, x$n_nodes,
           iter,
           x_r = x_axis_r,
           len = x_axis_l
@@ -61,14 +61,14 @@ plot.statnnet <-
       if (conf_int == TRUE && show[i]) {
         if (method[1] == "mlesim") {
           conf_val[[i]] <- mlesim(
-            W = x$wts, X = x$X, y = x$y, q = x$n[2], ind = i,
+            W = x$weights, X = x$X, y = x$y, q = x$n_nodes, ind = i,
             FUN = pdp_effect, B = B, alpha = alpha,
             x_r = x_axis_r,
             len = x_axis_l
           )
         } else if (method[1] == "deltamethod") {
           conf_val[[i]] <- delta_method(
-            W = x$wts, X = x$X, y = x$y, q = x$n[2],
+            W = x$weights, X = x$X, y = x$y, q = x$n_nodes,
             ind = i, FUN = pdp_effect,
             alpha = alpha, x_r = x_axis_r,
             len = x_axis_l

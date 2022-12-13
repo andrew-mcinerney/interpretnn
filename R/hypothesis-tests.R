@@ -1,6 +1,5 @@
 #' Wald test for inputs
 #'
-#'
 #' @param X Data
 #' @param y Response
 #' @param W Weight vector
@@ -10,15 +9,14 @@
 wald_test <- function(X, y, W, q) {
   p <- ncol(X)
   n <- nrow(X)
+  
+  rss <- nn_rss(W, X, y, q)
 
-  nn <- nnet::nnet(X, y,
-    size = q, linout = T, Hess = T, maxit = 0, trace = F,
-    Wts = W
-  )
+  hess <- numDeriv::hessian(nn_rss, W, X = X, y = y, q = q)
 
-  sigma2 <- nn$value / n # estimate \sigma^2
+  sigma2 <- rss / n # estimate \sigma^2
 
-  Sigma_inv <- nn$Hessian / (2 * sigma2) # $\Sigma^-1 = I(\theta)$
+  Sigma_inv <- hess / (2 * sigma2) # $\Sigma^-1 = I(\theta)$
 
   Sigma <- solve(Sigma_inv)
 
@@ -29,7 +27,7 @@ wald_test <- function(X, y, W, q) {
   for (i in 1:p) {
     # stores which weights correspond input unit i
     ind_vec <- sapply(
-      X = 1:q,
+      X = 1:q[1],
       FUN = function(x) (x - 1) * (p + 1) + 1 + i
     )
 
@@ -38,12 +36,13 @@ wald_test <- function(X, y, W, q) {
 
     chisq[i] <- t(theta_x) %*% Sigma_inv_x %*% theta_x
 
-    p_values[i] <- 1 - stats::pchisq(chisq[i], df = q)
-    p_values_f[i] <- 1 - stats::pf(chisq[i] / q, df1 = q, df2 = n - length(W))
+    p_values[i] <- 1 - stats::pchisq(chisq[i], df = q[1])
+    p_values_f[i] <- 1 - stats::pf(chisq[i] / q[1], df1 = q[1], df2 = n - length(W))
   }
 
   return(list("chisq" = chisq, "p_value" = p_values, "p_value_f" = p_values_f))
 }
+
 
 
 #' Likelihood ratio test for inputs

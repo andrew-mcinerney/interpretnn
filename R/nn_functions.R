@@ -125,6 +125,15 @@ nn_loglike <- function(object, X = NULL, y = NULL) {
     sigma2 <- RSS / n
 
     log_like <- (-n / 2) * log(2 * pi * sigma2) - RSS / (2 * sigma2)
+    
+  } else if (class(object)[1] == "nn") {
+    n <- nrow(object$response)
+    
+    RSS <- object$result.matrix[1, ] * 2
+    
+    sigma2 <- RSS / n
+    
+    log_like <- (-n / 2) * log(2 * pi * sigma2) - RSS / (2 * sigma2)
   }
 
   return(log_like)

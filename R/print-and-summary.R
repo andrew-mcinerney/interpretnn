@@ -5,8 +5,8 @@ print.statnn <- function(x, ...) {
   cat("Call (statnn):\n")
   print(x$cl)
   cat("\n")
-  cat("Model Architecture: ", x$n_inputs, "-", x$n_nodes, "-", "1", " network",
-    sep = ""
+  cat("Model Architecture: ", x$n_inputs, "-",
+      paste0(x$n_nodes, collapse = "-"), "-", "1", " network", sep = ""
   )
   cat(" with", x$n_param, "weights\n")
 }

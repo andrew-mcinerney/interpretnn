@@ -14,49 +14,40 @@ print.statnn <- function(x, ...) {
 #' @export
 coef.statnn <- function(object, ...) {
   weights <- object$weights
-
-  wm <- c(
-    "b",
-    paste(colnames(object$X), sep = ""),
-    paste("h", seq_len(object$n_nodes), sep = ""),
-    as.character(ifelse(!is.null(names(object$y)), names(object$y), "y"))
-  )
-
-  conn <- c(
-    rep(0:object$n_inputs, times = object$n_nodes), 0,
-    (object$n_inputs + 1):(object$n_inputs + object$n_nodes)
-  )
-
-  nunits <- object$n_inputs + object$n_nodes + 2
-
-  nconn <- c(
-    rep(0, times = object$n_inputs + 2),
-    seq(object$n_inputs + 1, object$n_nodes * (object$n_inputs + 1),
-      by = (object$n_inputs + 1)
-    ),
-    object$n_nodes * (object$n_inputs + 2) + 1
-  )
-
-  names(weights) <- apply(
-    cbind(
-      wm[1 + conn],
-      wm[1 + rep(1:nunits - 1, diff(nconn))]
-    ),
-    1,
-    function(x) paste(x, collapse = "->")
-  )
+  
+  layer_sizes <- c(object$n_inputs, object$n_nodes, 1)
+  
+  
+  weight_names_in <- rep(c("b0", colnames(object$X)), times = object$n_nodes[1])
+  weight_names_out <- c()
+  for (i in 1:length(object$n_nodes)) {
+    weight_names_in <- c(weight_names_in, 
+                         rep(c(paste0("b", i), 
+                               paste0("h", i, 1:object$n_nodes[i])),
+                             layer_sizes[i + 2]))
+    
+    weight_names_out <- c(weight_names_out, 
+                          rep(paste0("h", i, 1:object$n_nodes[i]),
+                              each = layer_sizes[i] + 1))
+  }
+  weight_names_out <- c(weight_names_out, rep("y", 
+                                              object$n_nodes[length(object$n_nodes)] + 1))
+  
+  weight_names <- paste(weight_names_in, weight_names_out, sep = "->")                      
+  
+  
+  names(weights) <- weight_names
   return(weights)
 }
 
 #' @export
 summary.statnn <- function(object, ...) {
-  nconn <- c(
-    rep(0, times = object$n_inputs + 2),
-    seq(object$n_inputs + 1, object$n_nodes * (object$n_inputs + 1),
-      by = (object$n_inputs + 1)
-    ),
-    object$n_nodes * (object$n_inputs + 2) + 1
-  )
+  
+  n_nodes <- c(object$n_inputs, object$n_nodes, 1)
+  
+  nconn <- cumsum(c(rep(0, times = n_nodes[1] + 2),
+                    unlist(mapply(function (x, y) rep(x, times = y),
+                                  n_nodes[-length(n_nodes)] + 1, n_nodes[-1]))))
 
   object$nconn <- nconn
 
@@ -115,7 +106,7 @@ print.summary.statnn <- function(x, ...) {
   print(x$cl)
   cat("\n")
   cat("Number of input nodes:", x$n_inputs, "\n")
-  cat("Number of hidden nodes:", x$n_nodes, "\n")
+  cat("Number of hidden nodes:", paste(x$n_nodes, collapse = ", "), "\n")
   cat("\n")
   cat("BIC:", x$BIC, "\n")
   cat("\n")
@@ -142,8 +133,9 @@ print.summary.statnn <- function(x, ...) {
   cat("\n")
   cat("Weights:\n")
   wts <- format(round(coef.statnn(x), 2))
-  lapply(
-    split(wts, rep(1:(x$n_inputs + x$n_nodes + 2), diff(x$nconn))),
-    function(x) print(x, quote = FALSE)
-  )
+  # lapply(
+  #   split(wts, rep(1:(x$n_inputs + x$n_nodes + 2), diff(x$nconn))),
+  #   function(x) print(x, quote = FALSE)
+  # )
+  print(wts, quote = FALSE)
 }

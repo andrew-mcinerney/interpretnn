@@ -202,8 +202,7 @@ statnn.nn <- function(object, B = 1000, ...) {
   
   stnn <- sapply(stnn_names, function(x) NULL)
   
-  nn_weights <- c(as.vector(object$weights[[1]][[1]]),
-                      object$weights[[1]][[2]])
+  nn_weights <- unlist(sapply(object$weights[[1]], as.vector))
   
   stnn$weights <- nn_weights
   
@@ -211,11 +210,14 @@ statnn.nn <- function(object, B = 1000, ...) {
   
   stnn$n_inputs <- nrow(object$weights[[1]][[1]]) - 1
   
-  stnn$n_nodes <- ncol(object$weights[[1]][[1]])
+  n_nodes <- sapply(object$weights[[1]], ncol)
   
-  stnn$n_layers <- 1
+  stnn$n_nodes <- n_nodes[-length(n_nodes)]
   
-  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  stnn$n_layers <- length(stnn$n_nodes)
+  
+  stnn$n_param <- sum(c(stnn$n_inputs + 1, stnn$n_nodes + 1) * 
+                        c(stnn$n_nodes, 1))
   
   stnn$n <- nrow(object$response)
   

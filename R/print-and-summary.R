@@ -41,7 +41,7 @@ coef.statnn <- function(object, ...) {
 }
 
 #' @export
-summary.statnn <- function(object, ...) {
+summary.statnn <- function(object, wald_single_par = FALSE, ...) {
   
   n_nodes <- c(object$n_inputs, object$n_nodes, 1)
   
@@ -52,6 +52,14 @@ summary.statnn <- function(object, ...) {
   object$nconn <- nconn
 
   covariates <- colnames(object$X)
+  
+  # extracts which input-to-hidden weights are associated with each covariate
+  covariate_indices <- t(
+    sapply(1:object$n_inputs,
+           FUN = function(ind)
+             sapply(X = 1:object$n_nodes[1],
+                    FUN = function(x) 
+                      (x - 1) * (object$n_inputs + 1) + 1 + ind)))
 
   coefdf <- data.frame(
     Covariate = covariates,
@@ -59,7 +67,8 @@ summary.statnn <- function(object, ...) {
     Std.Error = object$eff[, 2],
     Break1 = rep("|", length(object$wald$chisq)),
     Wald.chi = object$wald$chisq,
-    Wald.p.value = object$wald$p_value
+    Wald.p.value = object$wald$p_value,
+    Wald.weights = NA
   )
 
   colnames(coefdf)[1] <- ""
@@ -67,6 +76,7 @@ summary.statnn <- function(object, ...) {
   colnames(coefdf)[4] <- "|"
   colnames(coefdf)[5] <- "  X^2"
   colnames(coefdf)[6] <- "Pr(> X^2)"
+  colnames(coefdf)[7] <- "Weights"
 
   object$coefdf <- coefdf
 
@@ -79,6 +89,32 @@ summary.statnn <- function(object, ...) {
     formatC(object$coefdf$`Pr(> X^2)`, format = "e", digits = 2),
     format(Signif)
   )
+  
+  Signif_sp <- matrix(stats::symnum(object$wald_sp$p_value[
+    as.vector(t(covariate_indices))],
+    corr = FALSE, na = FALSE,
+    cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+    symbols = c("***", "**", "*", ".", " ")),
+    nrow = object$n_inputs, byrow = TRUE)
+  
+  weight_p_mat <- matrix(unlist(lapply(1:object$n_inputs, FUN = function (ind) 
+    paste(round(object$weights[covariate_indices[ind,]], digits = 2), format(Signif_sp[ind, ])))),
+    nrow = object$n_inputs, 
+    byrow = TRUE)
+  
+  object$coefdf$Weights <- apply(weight_p_mat,
+                                      1,
+                                      function(x)
+                                        paste("(",
+                                              paste(x, collapse = ", "),
+                                              ")",
+                                              sep = ""))
+  
+  object$coefdf$Weights <- gsub(",", ", ", gsub(" ", "", object$coefdf$Weights))
+  
+  if (wald_single_par == FALSE) {
+    object$coefdf <- object$coefdf[, colnames(object$coefdf) != "Weights"]
+  }
 
   class(object) <- c("summary.statnn", class(object))
   return(object)

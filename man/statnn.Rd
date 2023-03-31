@@ -5,6 +5,7 @@
 \alias{statnn.nnet}
 \alias{statnn.keras.engine.training.Model}
 \alias{statnn.nn}
+\alias{statnn.ANN}
 \title{Statistically-Based Neural Networks}
 \usage{
 statnn(...)
@@ -14,11 +15,13 @@ statnn.nnet(object, X, B = 1000, ...)
 statnn.keras.engine.training.Model(object, X, y, B = 1000, ...)
 
 statnn.nn(object, B = 1000, ...)
+
+statnn.ANN(object, X, B = 1000, ...)
 }
 \arguments{
 \item{...}{arguments passed to or from other methods}
 
-\item{object}{neuralnet object}
+\item{object}{ANN object}
 
 \item{X}{matrix of input data}
 
@@ -31,6 +34,8 @@ A list with information of the optimal model.
 \itemize{
 \item \code{statnn} - object of class statnn.
 }
+
+statnn object
 
 statnn object
 

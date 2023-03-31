@@ -32,7 +32,7 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
 
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
     "y", "B"
   )
 
@@ -77,6 +77,8 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
   stnn$y <- object$fitted.values + object$residuals
 
   stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
 
   stnn$X <- X
 
@@ -114,7 +116,7 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
 
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
     "y", "B"
   )
 
@@ -162,6 +164,8 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
   stnn$y <- y
 
   stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
 
   stnn$X <- X
 
@@ -196,7 +200,7 @@ statnn.nn <- function(object, B = 1000, ...) {
   
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
     "y", "B"
   )
   
@@ -246,6 +250,89 @@ statnn.nn <- function(object, B = 1000, ...) {
   stnn$y <- object$response
   
   stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$X <- X
+  
+  stnn$B <- B
+  
+  class(stnn) <- "statnn"
+  
+  return(stnn)
+}
+
+
+#' @rdname statnn
+#' @param object ANN object
+#' @param X matrix of input data 
+#' @param B number of bootstrap replicates
+#' @param ... arguments passed to or from other methods
+#' @return statnn object
+#' @export
+statnn.ANN <- function(object, X, B = 1000, ...) {
+  if (class(object)[1] != "ANN") {
+    stop("Error: Argument must be of class ANN")
+  }
+  
+  if (is.null(colnames(X))) {
+    colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
+  }
+  
+  stnn_names <- c(
+    "weights", "val", "n_inputs", "n_nodes", "n_layers",
+    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "y", "B"
+  )
+  
+  stnn <- sapply(stnn_names, function(x) NULL)
+  
+  nn_weights <- unlist(sapply(object$weights[[1]], as.vector))
+  
+  stnn$weights <- nn_weights
+  
+  stnn$val <- object$result.matrix[1, ] * 2
+  
+  stnn$n_inputs <- nrow(object$weights[[1]][[1]]) - 1
+  
+  n_nodes <- sapply(object$weights[[1]], ncol)
+  
+  stnn$n_nodes <- n_nodes[-length(n_nodes)]
+  
+  stnn$n_layers <- length(stnn$n_nodes)
+  
+  stnn$n_param <- sum(c(stnn$n_inputs + 1, stnn$n_nodes + 1) * 
+                        c(stnn$n_nodes, 1))
+  
+  stnn$n <- nrow(object$response)
+  
+  stnn$loglike <- nn_loglike(object)
+  
+  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  
+  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  colnames(eff_matrix) <- c("eff", "eff_se")
+  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 2] <- apply(
+    replicate(
+      B,
+      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+                    W = stnn$weights,
+                    q = stnn$n_nodes
+      )
+    ),
+    1, stats::sd
+  )
+  
+  stnn$eff <- eff_matrix
+  
+  stnn$cl <- match.call()
+  
+  stnn$y <- object$response
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
   
   stnn$X <- X
   

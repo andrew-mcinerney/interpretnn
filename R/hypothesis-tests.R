@@ -108,3 +108,37 @@ lr_test <- function(X, y, W, q, n_init = 1, unif = 3, maxit = 1000, ...) {
   }
   return(list("chisq" = chisq, "p_value" = p_values))
 }
+
+#' Wald test for weights
+#'
+#' @param X Data
+#' @param y Response
+#' @param W Weight vector
+#' @param q Number of hidden nodes
+#' @return Wald hypothesis test for each weight
+#' @export
+wald_single_parameter <- function (X, y, W, q){
+  p <- ncol(X)
+  n <- nrow(X)
+  k <- length(W)
+  
+  rss <- nn_rss(W, X, y, q)
+  
+  hess <- numDeriv::hessian(nn_rss, W, X = X, y = y, q = q)
+  
+  sigma2 <- rss / n # estimate \sigma^2
+  
+  Sigma_inv <- hess / (2 * sigma2) # $\Sigma^-1 = I(\theta)$
+  
+  Sigma <- solve(Sigma_inv)
+  
+  chisq <- (W^2) / diag(Sigma)
+  p_values <- 1 - stats::pchisq(chisq, df = 1)
+  
+  ci <- matrix(NA, nrow = k, ncol = 2)
+  ci[, 1] <- W + stats::qnorm(0.025) * sqrt(diag(Sigma))
+  ci[, 2] <- W + stats::qnorm(0.975) * sqrt(diag(Sigma))
+  
+  
+  return(list("chisq" = chisq, "p_value" = p_values, "ci" = ci))
+}

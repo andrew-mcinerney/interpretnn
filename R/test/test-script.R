@@ -1,6 +1,8 @@
 library(nnet)
 library(keras)
 library(neuralnet)
+library(ANN2)
+library(torch)
 
 # prep data ---------------------------------------------------------------
 
@@ -76,7 +78,7 @@ neural_weights <- c(as.vector(neural_model$weights[[1]][[1]]),
                     neural_model$weights[[1]][[2]])
 
 
-yhat <- nn_pred(X, neural_weights, q)
+yhat <- statnn::nn_pred(X, neural_weights, q)
 neural_model$net.result[[1]] - yhat
 
 sum((yhat - y)^2)
@@ -87,3 +89,29 @@ stnn <- statnn(neural_model)
 summary(stnn)
 
 plot(stnn)
+
+
+# ANN2 --------------------------------------------------------------------
+
+ann_model <- neuralnetwork(X, y, q, regression = TRUE, standardize = FALSE,
+                           loss.type = "squared", activ.functions = "sigmoid",
+                           batch.size = nrow(X), val.prop = 0, n.epochs = 100000)
+
+
+ann_weights <- c(as.vector(t(cbind(ann_model$Rcpp_ANN$getParams()[[2]][[1]],
+                             ann_model$Rcpp_ANN$getParams()[[1]][[1]]))),
+           as.vector(t(cbind(ann_model$Rcpp_ANN$getParams()[[2]][[2]],
+                             ann_model$Rcpp_ANN$getParams()[[1]][[2]]))))
+
+# ann_model$Rcpp_ANN$getTrainHistory()$train_loss
+
+sum((y - predict(ann_model, newdata = X)[[1]])^2) / nrow(X)
+
+statnn::nn_pred(X, ann_weights, q) - predict(ann_model, newdata = X)[[1]]
+
+
+
+# torch -------------------------------------------------------------------
+
+
+  

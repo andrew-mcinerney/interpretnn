@@ -147,28 +147,21 @@ pdp_effect <- function(W, X, q, ind, x_r = c(-3, 3), len = 301) {
 #' @param alpha significance level
 #' @param x_r x-axis range
 #' @param len number of breaks for x-axis
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
 #' @return Effect for each input
 #' @export
 mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
-                   len = 301) {
-  nn <- nnet::nnet(y ~ .,
-    data = data.frame(X, y), size = q, Wts = W,
-    linout = TRUE, trace = FALSE, maxit = 0, Hess = TRUE
-  )
-
-  n <- nrow(X)
-
-  sigma2 <- nn$value / n # nn$value = RSS
-
-  Sigma_inv <- nn$Hessian / (2 * sigma2)
-
-  Sigma_hat <- solve(Sigma_inv)
-
-  sim <- MASS::mvrnorm(n = B, mu = W, Sigma = Sigma_hat)
+                   len = 301, lambda = 0, response = "continuous", ...) {
+  
+  vc <- VC(W, X, y, q, lambda = lambda, response = response)
+  
+  sim <- MASS::mvrnorm(n = B, mu = W, Sigma = vc)
 
   pred <- apply(sim, 1, function(x) {
     FUN(x,
-      X = X, ind = ind, q = q,
+      X = X, q = q,
       x_r = x_r, len = len
     )
   })
@@ -192,36 +185,30 @@ mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
 #' @param alpha significance level
 #' @param x_r x-axis range
 #' @param len number of breaks for x-axis
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
 #' @param ... additional arguments to FUN
 #' @return Effect for each input
 #' @export
 delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
-                         len = 301, ...) {
-  nn <- nnet::nnet(X, y,
-    size = q, Wts = W, linout = TRUE, Hess = TRUE,
-    maxit = 0, trace = FALSE
-  )
-
-  sigma2 <- nn$value / nrow(X) # estimate \sigma^2
-
-  Sigma_inv <- nn$Hessian / (2 * sigma2)
-
-  Sigma_hat <- solve(Sigma_inv)
+                         len = 301, lambda = 0, response = "continuous", ...) {
+  
+  vc <- VC(W, X, y, q, lambda = lambda, response = response)
 
   gradient <- numDeriv::jacobian(
     func = FUN,
     x = W,
     X = X,
-    ind = ind,
     q = q,
     x_r = x_r,
     len = len,
     ...
   )
 
-  var_est <- as.matrix(gradient) %*% Sigma_hat %*% t(as.matrix(gradient))
+  var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
 
-  pred <- FUN(W = W, X = X, q = q, ind = ind, x_r = x_r, len = len, ...)
+  pred <- FUN(W = W, X = X, q = q, x_r = x_r, len = len, ...)
 
   upper <- pred + stats::qnorm(1 - alpha / 2) * sqrt(diag(var_est))
   lower <- pred + stats::qnorm(alpha / 2) * sqrt(diag(var_est))

@@ -4,7 +4,21 @@
 \alias{mlesim}
 \title{Perform m.l.e. simulation for a function FUN to calculate associated uncertainty}
 \usage{
-mlesim(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3), len = 301)
+mlesim(
+  W,
+  X,
+  y,
+  q,
+  ind,
+  FUN,
+  B = 1000,
+  alpha = 0.05,
+  x_r = c(-3, 3),
+  len = 301,
+  lambda = 0,
+  response = "continuous",
+  ...
+)
 }
 \arguments{
 \item{W}{Weight vector}
@@ -26,6 +40,11 @@ mlesim(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3), len = 301)
 \item{x_r}{x-axis range}
 
 \item{len}{number of breaks for x-axis}
+
+\item{lambda}{Ridge penalty. Default is 0.}
+
+\item{response}{Response type: \code{"continuous"} (default) or
+\code{"binary"}}
 }
 \value{
 Effect for each input

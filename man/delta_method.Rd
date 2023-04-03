@@ -14,6 +14,8 @@ delta_method(
   alpha = 0.05,
   x_r = c(-3, 3),
   len = 301,
+  lambda = 0,
+  response = "continuous",
   ...
 )
 }
@@ -35,6 +37,11 @@ delta_method(
 \item{x_r}{x-axis range}
 
 \item{len}{number of breaks for x-axis}
+
+\item{lambda}{Ridge penalty. Default is 0.}
+
+\item{response}{Response type: \code{"continuous"} (default) or
+\code{"binary"}}
 
 \item{...}{additional arguments to FUN}
 }

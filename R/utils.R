@@ -3,12 +3,12 @@
 #'
 #' @param X Data
 #' @param W Weight vector
-#' @param q Number of hidden nodes (use vector if more than one layer)
-#' @param output Activation function for output unit: `"identity"` (default) or
-#'  `"sigmoid"`
+#' @param q Number of hidden nodes
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
 #' @return Prediction for given inputs
 #' @export
-nn_pred <- function(X, W, q, output = "identity") {
+nn_pred <- function(X, W, q, response = "continuous") {
   n <- nrow(X)
   p <- ncol(X)
   
@@ -33,12 +33,12 @@ nn_pred <- function(X, W, q, output = "identity") {
     }
     
     
-    if (output == "identity") {
+    if (response == "continuous") {
       y_hat <- h_act %*% 
         matrix(W[(layer_nodes[length(layer_nodes) - 1] + 1):
                    layer_nodes[length(layer_nodes)]],
                ncol = 1)
-    } else if (output == "sigmoid") {
+    } else if (response == "binary") {
       y_hat <- sigmoid(
         h_act %*% matrix(W[c((length(W) - q):length(W))], ncol = 1)
       )

@@ -4,17 +4,17 @@
 \alias{nn_pred}
 \title{Neural network prediction}
 \usage{
-nn_pred(X, W, q, output = "identity")
+nn_pred(X, W, q, response = "continuous")
 }
 \arguments{
 \item{X}{Data}
 
 \item{W}{Weight vector}
 
-\item{q}{Number of hidden nodes (use vector if more than one layer)}
+\item{q}{Number of hidden nodes}
 
-\item{output}{Activation function for output unit: \code{"identity"} (default) or
-\code{"sigmoid"}}
+\item{response}{Response type: \code{"continuous"} (default) or
+\code{"binary"}}
 }
 \value{
 Prediction for given inputs

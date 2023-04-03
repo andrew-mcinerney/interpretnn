@@ -60,20 +60,23 @@ nn_pred <- function(X, W, q, response = "continuous") {
   }
 }
 
-#' Neural network prediction
+#' Neural network loss
 #'
 #'
 #' @param X Data
 #' @param W Weight vector
 #' @param q Number of hidden nodes
-#' @param output Activation function for output unit: `"identity"` (default) or
-#'  `"sigmoid"`
-#' @return Prediction for given inputs
+#' @param lambda Ridge peanlty
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @return loss for given neural network
 #' @export
-nn_rss <- function(W, X, y, q, output = "identity") {
-  pred <- nn_pred(X, W, q, output)
+nn_loss <- function(W, X, y, q, lambda = 0, response = "continuous") {
+  pred <- nn_pred(X, W, q, response)
   
-  return(sum((pred - y)^2))
+  val <- sum((pred - y)^2) + lambda * sum(W ^ 2)
+  
+  return(val)
 }
 
 #' Sigmoid activation function

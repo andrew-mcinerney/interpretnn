@@ -136,6 +136,33 @@ nn_loglike <- function(object, X = NULL, y = NULL) {
     sigma2 <- RSS / n
     
     log_like <- (-n / 2) * log(2 * pi * sigma2) - RSS / (2 * sigma2)
+  } else if (class(object)[1] == "luz_module_fitted") {
+    if (is.null(y)) {
+      stop("Error: Argument y must not be NULL when class(object) == keras.engine.sequential.Sequential")
+    }
+    
+    if (is.null(X)) {
+      stop("Error: Argument X must not be NULL when class(object) == keras.engine.sequential.Sequential")
+    }
+    
+    luz_weights <- object$model$parameters
+    
+    weights <- c(
+      as.vector(t(cbind(as.matrix(luz_weights$hidden.bias),
+                        as.matrix(luz_weights$hidden.weight)))),
+      cbind(as.matrix(luz_weights$output.bias),
+            as.matrix(luz_weights$output.weight))
+    )
+    
+    
+    n <- nrow(X)
+    
+    RSS <- sum((nn_pred(X, weights, length(luz_weights$output.weight)) - y)^2)
+    
+    sigma2 <- RSS / n
+    
+    log_like <- (-n / 2) * log(2 * pi * sigma2) - RSS / (2 * sigma2)
+    
   }
 
   return(log_like)

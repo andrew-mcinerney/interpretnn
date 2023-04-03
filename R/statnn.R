@@ -342,3 +342,93 @@ statnn.ANN <- function(object, X, B = 1000, ...) {
   
   return(stnn)
 }
+
+
+#' @rdname statnn
+#' @param object nnet object
+#' @param X matrix of input data 
+#' @param y response variable
+#' @param B number of bootstrap replicates
+#' @param ... arguments passed to or from other methods
+#' @return statnn object
+#' @export
+statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
+  if (class(object)[1] != "luz_module_fitted") {
+    stop("Error: Argument object must be of class luz_module_fitted")
+  }
+  
+  if (is.null(colnames(X))) {
+    colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
+  }
+  
+  if (is.null(y)) {
+    stop("Error: Argument y must not be NULL when class(object) == keras.engine.sequential.Sequential")
+  }
+  
+  weights <- object$model$parameters
+  
+  
+  stnn_names <- c(
+    "weights", "val", "n_inputs", "n_nodes", "n_layers",
+    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "y", "B"
+  )
+  
+  stnn <- sapply(stnn_names, function(x) NULL)
+  
+  stnn$weights <- c(
+    as.vector(t(cbind(as.matrix(weights$hidden.bias),
+                      as.matrix(weights$hidden.weight)))),
+    cbind(as.matrix(weights$output.bias),
+          as.matrix(weights$output.weight))
+  )
+  
+  
+  stnn$val <- sum((nn_pred(X, stnn$weights, length(weights$output.weight)) - y)^2)
+  
+  stnn$n_inputs <- ncol(weights$hidden.weight)
+  
+  stnn$n_nodes <- length(weights$output.weight)
+  
+  stnn$n_layers <- 1
+  
+  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  
+  stnn$n <- nrow(X)
+  
+  stnn$loglike <- nn_loglike(object, X = X, y = y)
+  
+  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  
+  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  colnames(eff_matrix) <- c("eff", "eff_se")
+  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 2] <- apply(
+    replicate(
+      B,
+      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+                    W = stnn$weights,
+                    q = stnn$n_nodes
+      )
+    ),
+    1, stats::sd
+  )
+  
+  stnn$eff <- eff_matrix
+  
+  stnn$cl <- match.call()
+  
+  stnn$y <- y
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  
+  stnn$X <- X
+  
+  stnn$B <- B
+  
+  class(stnn) <- "statnn"
+  
+  return(stnn)
+}

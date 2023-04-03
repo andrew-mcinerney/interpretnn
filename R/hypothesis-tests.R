@@ -1,40 +1,36 @@
 #' Wald test for inputs
 #'
+#'
 #' @param X Data
 #' @param y Response
 #' @param W Weight vector
 #' @param q Number of hidden nodes
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
 #' @return Wald hypothesis test for each input
 #' @export
-wald_test <- function(X, y, W, q) {
+wald_test <- function(X, y, W, q, lambda = 0, response = "continuous") {
   p <- ncol(X)
   n <- nrow(X)
   
-  rss <- nn_rss(W, X, y, q)
-
-  hess <- numDeriv::hessian(nn_rss, W, X = X, y = y, q = q)
-
-  sigma2 <- rss / n # estimate \sigma^2
-
-  Sigma_inv <- hess / (2 * sigma2) # $\Sigma^-1 = I(\theta)$
-
-  Sigma <- solve(Sigma_inv)
+  vc <- VC(W, X, y, q, lambda = lambda, response = response)
 
   p_values <- rep(NA, p)
   chisq <- rep(NA, p)
   p_values_f <- rep(NA, p)
 
   for (i in 1:p) {
-    # stores which weights correspond input unit i
+    
     ind_vec <- sapply(
       X = 1:q[1],
       FUN = function(x) (x - 1) * (p + 1) + 1 + i
     )
 
     theta_x <- W[ind_vec]
-    Sigma_inv_x <- solve(Sigma[ind_vec, ind_vec])
+    vc_inv_x <- solve(vc[ind_vec, ind_vec])
 
-    chisq[i] <- t(theta_x) %*% Sigma_inv_x %*% theta_x
+    chisq[i] <- t(theta_x) %*% vc_inv_x %*% theta_x
 
     p_values[i] <- 1 - stats::pchisq(chisq[i], df = q[1])
     p_values_f[i] <- 1 - stats::pf(chisq[i] / q[1], df1 = q[1], df2 = n - length(W))
@@ -115,24 +111,19 @@ lr_test <- function(X, y, W, q, n_init = 1, unif = 3, maxit = 1000, ...) {
 #' @param y Response
 #' @param W Weight vector
 #' @param q Number of hidden nodes
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
 #' @return Wald hypothesis test for each weight
 #' @export
-wald_single_parameter <- function (X, y, W, q){
+wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuous"){
   p <- ncol(X)
   n <- nrow(X)
   k <- length(W)
   
-  rss <- nn_rss(W, X, y, q)
+  vc <- VC(W, X, y, q, lambda = lambda, response = response)
   
-  hess <- numDeriv::hessian(nn_rss, W, X = X, y = y, q = q)
-  
-  sigma2 <- rss / n # estimate \sigma^2
-  
-  Sigma_inv <- hess / (2 * sigma2) # $\Sigma^-1 = I(\theta)$
-  
-  Sigma <- solve(Sigma_inv)
-  
-  chisq <- (W^2) / diag(Sigma)
+  chisq <- (W^2) / diag(vc)
   p_values <- 1 - stats::pchisq(chisq, df = 1)
   
   ci <- matrix(NA, nrow = k, ncol = 2)

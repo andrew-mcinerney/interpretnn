@@ -4,7 +4,7 @@
 \alias{wald_test}
 \title{Wald test for inputs}
 \usage{
-wald_test(X, y, W, q)
+wald_test(X, y, W, q, lambda = 0, response = "continuous")
 }
 \arguments{
 \item{X}{Data}
@@ -14,6 +14,11 @@ wald_test(X, y, W, q)
 \item{W}{Weight vector}
 
 \item{q}{Number of hidden nodes}
+
+\item{lambda}{Ridge penalty. Default is 0.}
+
+\item{response}{Response type: \code{"continuous"} (default) or
+\code{"binary"}}
 }
 \value{
 Wald hypothesis test for each input

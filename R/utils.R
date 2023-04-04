@@ -1,84 +1,3 @@
-#' Neural network prediction
-#'
-#'
-#' @param X Data
-#' @param W Weight vector
-#' @param q Number of hidden nodes
-#' @param response Response type: `"continuous"` (default) or
-#'  `"binary"`
-#' @return Prediction for given inputs
-#' @export
-nn_pred <- function(X, W, q, response = "continuous") {
-  n <- nrow(X)
-  p <- ncol(X)
-  
-  k <- sum(c(p + 1, q + 1) * c(q, 1))
-  
-  layer_nodes <- c(0, cumsum(c(p + 1, q + 1) * c(q, 1)))
-  
-  if (length(W) == k) {
-    
-    X <- cbind(rep(1, n), X)
-    
-    temp <- X
-    
-    for(i in 1:length(q)) {
-      
-      h_input <- temp %*% t(matrix(W[(layer_nodes[i] + 1):layer_nodes[i + 1]],
-                                   nrow = q[i], byrow = TRUE))
-      
-      h_act <- cbind(rep(1, n), sigmoid(h_input))
-      
-      temp <- h_act
-    }
-    
-    
-    if (response == "continuous") {
-      y_hat <- h_act %*% 
-        matrix(W[(layer_nodes[length(layer_nodes) - 1] + 1):
-                   layer_nodes[length(layer_nodes)]],
-               ncol = 1)
-    } else if (response == "binary") {
-      y_hat <- sigmoid(
-        h_act %*% matrix(W[c((length(W) - q):length(W))], ncol = 1)
-      )
-    } else {
-      stop(
-        sprintf(
-          "Error: %s not recognised as available output function.",
-          output
-        )
-      )
-    }
-    
-    return(y_hat)
-  } else {
-    stop(sprintf(
-      "Error: Incorrect number of weights for NN structure. W should have
-      %s weights (%s weights supplied).", k, length(W)
-    ))
-  }
-}
-
-#' Neural network loss
-#'
-#'
-#' @param X Data
-#' @param W Weight vector
-#' @param q Number of hidden nodes
-#' @param lambda Ridge peanlty
-#' @param response Response type: `"continuous"` (default) or
-#'  `"binary"`
-#' @return loss for given neural network
-#' @export
-nn_loss <- function(W, X, y, q, lambda = 0, response = "continuous") {
-  pred <- nn_pred(X, W, q, response)
-  
-  val <- sum((pred - y)^2) + lambda * sum(W ^ 2)
-  
-  return(val)
-}
-
 #' Sigmoid activation function
 #'
 #'
@@ -262,6 +181,10 @@ VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
   I_p <- I_0 + P
   
   vc <- solve(I_p) %*% I_0 %*% solve(I_p)
+  
+  if(any(eigen(vc)$values < 0)) {
+    stop("Error: variance-covariance matrix is not positive definite")
+  }
   
   return(vc)
   

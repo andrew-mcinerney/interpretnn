@@ -4,7 +4,7 @@
 \alias{nn_loglike}
 \title{Neural Network Normal Log-likelihood Value}
 \usage{
-nn_loglike(object, X = NULL, y = NULL, response = "continuous")
+nn_loglike(object, X = NULL, y = NULL, lambda = 0, response = "continuous")
 }
 \arguments{
 \item{object}{neural network object}
@@ -12,6 +12,11 @@ nn_loglike(object, X = NULL, y = NULL, response = "continuous")
 \item{X}{input data (required for keras)}
 
 \item{y}{response variable (required for keras)}
+
+\item{lambda}{Ridge peanlty}
+
+\item{response}{Response type: \code{"continuous"} (default) or
+\code{"binary"}}
 }
 \value{
 Log-Likelihhod value

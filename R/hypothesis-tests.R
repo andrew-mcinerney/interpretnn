@@ -127,8 +127,8 @@ wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuou
   p_values <- 1 - stats::pchisq(chisq, df = 1)
   
   ci <- matrix(NA, nrow = k, ncol = 2)
-  ci[, 1] <- W + stats::qnorm(0.025) * sqrt(diag(Sigma))
-  ci[, 2] <- W + stats::qnorm(0.975) * sqrt(diag(Sigma))
+  ci[, 1] <- W + stats::qnorm(0.025) * sqrt(diag(vc))
+  ci[, 2] <- W + stats::qnorm(0.975) * sqrt(diag(vc))
   
   
   return(list("chisq" = chisq, "p_value" = p_values, "ci" = ci))

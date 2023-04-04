@@ -13,13 +13,13 @@ nn_loglike(object, X = NULL, y = NULL, lambda = 0, response = "continuous")
 
 \item{y}{response variable (required for keras)}
 
-\item{lambda}{Ridge peanlty}
+\item{lambda}{Ridge penalty}
 
 \item{response}{Response type: \code{"continuous"} (default) or
 \code{"binary"}}
 }
 \value{
-Log-Likelihhod value
+Log-Likelihood value
 }
 \description{
 Neural Network Normal Log-likelihood Value

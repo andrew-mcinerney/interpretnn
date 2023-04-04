@@ -172,10 +172,10 @@ nn_fit_tracks <- function(X, y, q, n_init, inf_crit = "BIC",
 #' @param object neural network object
 #' @param X input data (required for keras)
 #' @param y response variable (required for keras)
-#' @param lambda Ridge peanlty
+#' @param lambda Ridge penalty
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
-#' @return Log-Likelihhod value
+#' @return Log-Likelihood value
 #' @export
 nn_loglike <- function(object, X = NULL, y = NULL, lambda = 0,
                        response = "continuous") {

@@ -27,12 +27,17 @@
 #' @param col.out.synapse color of the synapses leading away from the output
 #' neurons.
 #' @param col.intercept color of the intercept.
+#' @param col.sig.synapse color of the significant synapses.
+#' @param col.insig.synapse color of the insignificant synapses.
 #' @param fontsize fontsize of the text.
 #' @param dimension size of the plot in inches.
 #' @param show.weights a logical value indicating whether to print the
 #' calculated weights above the synapses.
 #' @param file a character string naming the plot to write to. If not stated,
 #' the plot will not be saved.
+#' @param rounding number of decimal places to round values.
+#' @param alpha significane level.
+#' @param lambda ridge penalty.
 #' @param \dots arguments to be passed to methods, such as graphical parameters
 #' (see \code{\link{par}}).
 #'
@@ -90,8 +95,8 @@ plotnn <-
       if (is.character(file) && file.exists(file))
         stop(sprintf("%s already exists", sQuote(file)))
       # result.matrix <- t(net$result.matrix)
-      if (rep == "best")
-        rep <- as.integer(which.min(result.matrix[, "error"]))
+      # if (rep == "best")
+      #   rep <- as.integer(which.min(result.matrix[, "error"]))
       if (rep > length(net$wts))
         stop("'rep' does not exist")
       weights <- net$wts[[rep]]

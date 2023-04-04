@@ -45,6 +45,8 @@ mlesim(
 
 \item{response}{Response type: \code{"continuous"} (default) or
 \code{"binary"}}
+
+\item{...}{additional arguments to FUN}
 }
 \value{
 Effect for each input

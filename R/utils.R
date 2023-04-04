@@ -56,6 +56,7 @@ covariate_eff <- function(X, W, q, response = "continuous") {
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
+#' @param ... additional arguments to FUN
 #' @return Effect for each input
 #' @export
 mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
@@ -134,7 +135,6 @@ delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
-#' @param ... additional arguments to nnet
 #' @return Effect for each input
 #' @export
 VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
@@ -176,4 +176,31 @@ VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
   
   return(vc)
   
+}
+
+torch_to_nnet <- function(torch_w) {
+  nnet_w <- c(
+    as.vector(t(cbind(as.matrix(torch_w$hidden.bias),
+                      as.matrix(torch_w$hidden.weight)))),
+    cbind(as.matrix(torch_w$output.bias),
+          as.matrix(torch_w$output.weight))
+  )
+  
+  return(nnet_w)
+}
+
+nnet_to_torch <- function(nnet_w, p, q) {
+  hidden_b_ind <- sapply(1:q, function(x) (x - 1) * (p + 1) + 1)
+  hidden_w_ind <- c(1:((p + 1) * q))[-hidden_b_ind]
+  
+  output_b_ind <- (p + 1) * q + 1
+  output_w_ind <- ((p + 1) * q + 2):((p + 2) * q + 1)
+  
+  torch_w <- vector("list")
+  torch_w$hidden.weight <- matrix(nnet_w[hidden_w_ind], nrow = q, byrow = TRUE)
+  torch_w$hidden.bias <- matrix(nnet_w[hidden_b_ind], nrow = q)
+  torch_w$output.weight <- nnet_w[output_w_ind]
+  torch_w$output.bias <- nnet_w[output_b_ind]
+  
+  return(torch_w)
 }

@@ -75,6 +75,10 @@ neurons.}
 
 \item{col.intercept}{color of the intercept.}
 
+\item{col.sig.synapse}{color of the significant synapses.}
+
+\item{col.insig.synapse}{color of the insignificant synapses.}
+
 \item{fontsize}{fontsize of the text.}
 
 \item{dimension}{size of the plot in inches.}
@@ -84,6 +88,12 @@ calculated weights above the synapses.}
 
 \item{file}{a character string naming the plot to write to. If not stated,
 the plot will not be saved.}
+
+\item{rounding}{number of decimal places to round values.}
+
+\item{alpha}{significane level.}
+
+\item{lambda}{ridge penalty.}
 
 \item{\dots}{arguments to be passed to methods, such as graphical parameters
 (see \code{\link{par}}).}

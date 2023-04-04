@@ -11,6 +11,8 @@ nn_loss(W, X, y, q, lambda = 0, response = "continuous")
 
 \item{X}{Data}
 
+\item{y}{Response variable}
+
 \item{q}{Number of hidden nodes}
 
 \item{lambda}{Ridge peanlty}

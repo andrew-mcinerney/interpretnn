@@ -63,6 +63,7 @@ nn_pred <- function(X, W, q, response = "continuous") {
 #'
 #' @param X Data
 #' @param W Weight vector
+#' @param y Response variable
 #' @param q Number of hidden nodes
 #' @param lambda Ridge peanlty
 #' @param response Response type: `"continuous"` (default) or

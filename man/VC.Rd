@@ -19,8 +19,6 @@ VC(W, X, y, q, lambda = 0, response = "continuous")
 
 \item{response}{Response type: \code{"continuous"} (default) or
 \code{"binary"}}
-
-\item{...}{additional arguments to nnet}
 }
 \value{
 Effect for each input

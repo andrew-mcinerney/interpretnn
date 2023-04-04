@@ -4,7 +4,7 @@
 \alias{covariate_eff}
 \title{Difference in average prediction for values above and below median}
 \usage{
-covariate_eff(X, W, q)
+covariate_eff(X, W, q, response = "continuous")
 }
 \arguments{
 \item{X}{Data}
@@ -12,6 +12,9 @@ covariate_eff(X, W, q)
 \item{W}{Weight vector}
 
 \item{q}{Number of hidden units}
+
+\item{response}{Response type: \code{"continuous"} (default) or
+\code{"binary"}}
 }
 \value{
 Effect for each input

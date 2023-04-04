@@ -13,45 +13,32 @@ sigmoid <- function(x) 1 / (1 + exp(-x))
 #' @param X Data
 #' @param W Weight vector
 #' @param q Number of hidden units
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
 #' @return Effect for each input
 #' @export
-covariate_eff <- function(X, W, q) {
+covariate_eff <- function(X, W, q, response = "continuous") {
   eff <- rep(NA, ncol(X))
   for (col in 1:ncol(X)) {
-    low <- X[X[, col] <= stats::median(X[, col]), ]
-    high <- X[X[, col] > stats::median(X[, col]), ]
+    
+    if (all(levels(factor(X[, col])) %in% c(0, 1)) &
+        length(levels(factor(X[, col]))) == 2) {
+      
+      low <- X[X[, col] == 0, ]
+      high <- X[X[, col] == 1, ]
 
-    eff[col] <- mean(nn_pred(high, W, q)) - mean(nn_pred(low, W, q))
+    } else {
+      
+      low <- X[X[, col] <= stats::median(X[, col]), ]
+      high <- X[X[, col] > stats::median(X[, col]), ]
+    }
+    eff[col] <- mean(nn_pred(high, W, q, response = response)) - 
+      mean(nn_pred(low, W, q, response = response))
   }
   names(eff) <- colnames(X)
   return(eff)
 }
 
-#' Partial Dependence Plot for one std. dev. increase
-#'
-#'
-#' @param W Weight vector
-#' @param X Data
-#' @param q Number of hidden units
-#' @param ind index of column to plot
-#' @param x_r x-axis range
-#' @param len number of breaks for x-axis
-#' @return Effect for each input
-#' @export
-pdp_effect <- function(W, X, q, ind, x_r = c(-3, 3), len = 301) {
-  sd_m <- matrix(0, ncol = ncol(X), nrow = nrow(X))
-  sd_m[, ind] <- stats::sd(X[, ind])
-
-  x <- seq(from = x_r[1], to = x_r[2], length.out = len)
-
-  eff <- rep(NA, len)
-
-  for (i in 1:len) {
-    X[, ind] <- x[i]
-    eff[i] <- mean(nn_pred(X + sd_m, W, q) - nn_pred(X, W, q))
-  }
-  return(eff)
-}
 
 #' Perform m.l.e. simulation for a function FUN to calculate associated uncertainty
 #'
@@ -80,7 +67,7 @@ mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
 
   pred <- apply(sim, 1, function(x) {
     FUN(x,
-      X = X, q = q,
+      X = X, q = q, ind = ind,
       x_r = x_r, len = len
     )
   })
@@ -120,6 +107,7 @@ delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
     x = W,
     X = X,
     q = q,
+    ind = ind,
     x_r = x_r,
     len = len,
     ...
@@ -127,7 +115,7 @@ delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
 
   var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
 
-  pred <- FUN(W = W, X = X, q = q, x_r = x_r, len = len, ...)
+  pred <- FUN(W = W, X = X, q = q, ind =ind, x_r = x_r, len = len, ...)
 
   upper <- pred + stats::qnorm(1 - alpha / 2) * sqrt(diag(var_est))
   lower <- pred + stats::qnorm(alpha / 2) * sqrt(diag(var_est))

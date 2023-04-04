@@ -48,7 +48,7 @@ plot.statnn <-
     cov_effs <- lapply(
       1:ncol(x$X),
       function(iter) {
-        pdp_effect(x$weights, x$X, x$n_nodes,
+        pce(x$weights, x$X, x$n_nodes,
           iter,
           x_r = x_axis_r,
           len = x_axis_l
@@ -62,16 +62,16 @@ plot.statnn <-
         if (method[1] == "mlesim") {
           conf_val[[i]] <- mlesim(
             W = x$weights, X = x$X, y = x$y, q = x$n_nodes, ind = i,
-            FUN = pdp_effect, B = B, alpha = alpha,
+            FUN = pce, B = B, alpha = alpha,
             x_r = x_axis_r,
-            len = x_axis_l
+            len = x_axis_l, lambda = x$lambda, response = x$response
           )
         } else if (method[1] == "deltamethod") {
           conf_val[[i]] <- delta_method(
             W = x$weights, X = x$X, y = x$y, q = x$n_nodes,
-            ind = i, FUN = pdp_effect,
+            ind = i, FUN = pce,
             alpha = alpha, x_r = x_axis_r,
-            len = x_axis_l
+            len = x_axis_l, lambda = x$lambda, response = x$response
           )
         }
       }

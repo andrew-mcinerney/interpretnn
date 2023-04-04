@@ -4,7 +4,7 @@
 \alias{nn_loglike}
 \title{Neural Network Normal Log-likelihood Value}
 \usage{
-nn_loglike(object, X = NULL, y = NULL)
+nn_loglike(object, X = NULL, y = NULL, response = "continuous")
 }
 \arguments{
 \item{object}{neural network object}

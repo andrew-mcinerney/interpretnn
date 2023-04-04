@@ -7,8 +7,13 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/andrew-mcinerney/statnnet/workflows/R-CMD-check/badge.svg)](https://github.com/andrew-mcinerney/statnnet/actions)
+[![R-CMD-check](https://github.com/andrew-mcinerney/statnn/workflows/R-CMD-check/badge.svg)](https://github.com/andrew-mcinerney/statnn/actions)
 <!-- badges: end -->
+
+## Notice
+
+This package is currently in development. If you experience any issues,
+please get in touch.
 
 ## Installation
 
@@ -20,14 +25,16 @@ You can install the development version of statnn from
 devtools::install_github("andrew-mcinerney/statnn")
 ```
 
-## statnnet()
+## statnn()
 
-The primary function in this package is `statnn()`. It creates a
-statistically-based version of an existing `nnet` object.
+The primary function in this package is `statnn()`. It creates a more
+statistically-based object of an existing neural network object.
+Currently supports neural networks from `nnet`, `neuralnet`, `keras`,
+`ANN`, and `torch`.
 
 ``` r
 library(statnn)
-stnn <- statnn(nnet, X)
+stnn <- statnn(object)
 ```
 
 A useful summary table can be generated using
@@ -43,4 +50,4 @@ plot(stnn, conf_int = TRUE)
 ```
 
 More information about these functions and their arguments can be found
-in the function documentation.
+in the documentation.

@@ -95,7 +95,7 @@ nn_fit_tracks <- function(X, y, q, n_init, inf_crit = "BIC",
 #' @param y response variable (required for keras)
 #' @return Log-Likelihhod value
 #' @export
-nn_loglike <- function(object, X = NULL, y = NULL) {
+nn_loglike <- function(object, X = NULL, y = NULL, response = "continuous") {
   if (class(object)[1] == "nnet") {
     n <- nrow(object$residuals)
 

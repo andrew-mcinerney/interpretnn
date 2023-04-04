@@ -33,8 +33,15 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
-    "y", "B"
+    "y", "B", "response", "lambda"
   )
+  
+  # NOTE: Will need to make more general for multiclass classification
+  if (object$entropy == TRUE) {
+    response <- "binary"
+  } else {
+    response <- "continuous"
+  }
 
   stnn <- sapply(stnn_names, function(x) NULL)
 
@@ -75,10 +82,18 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
   stnn$cl <- match.call()
 
   stnn$y <- object$fitted.values + object$residuals
-
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  stnn$response <- response
+  
+  stnn$lambda <- object$decay
+
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
+                         lambda = stnn$lambda,
+                         response = stnn$response)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
+                                        lambda = stnn$lambda,
+                                        response = stnn$response)
 
   stnn$X <- X
 
@@ -112,12 +127,19 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
   }
 
   keras_weights <- keras::get_weights(object)
+  
+  # NOTE: Will need to make more general for multiclass classification
+  if (object$loss$name == "binary_crossentropy") {
+    response <- "binary"
+  } else {
+    response <- "continuous"
+  }
 
 
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
-    "y", "B"
+    "y", "B", "response", "lambda"
   )
 
   stnn <- sapply(stnn_names, function(x) NULL)
@@ -162,10 +184,35 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
   stnn$cl <- match.call()
 
   stnn$y <- y
-
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  stnn$response <- response
+  
+  lambda_vec <- c()
+  
+  for (l in 2:(stnn$n_layers + 2)) {
+    
+    lambda_vec <- c(lambda_vec, 
+                    object$get_config()$layers[[l]]$config$kernel_regularizer$config$l2)
+    
+    lambda_vec <- c(lambda_vec, 
+                    object$get_config()$layers[[l]]$config$bias_regularizer$config$l2)
+  }
+  
+  
+  
+  stnn$lambda <- ifelse(is.null(lambda_vec), 0, 
+                        ifelse(all(lambda_vec == lambda_vec[1]) & 
+                                 (length(lambda_vec) == (stnn$n_layers + 1) * 2),
+                               lambda_vec[1],
+                               stop("Not all weight decay values are the same")))
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
+                         lambda = stnn$lambda,
+                         response = stnn$response)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
+                                        lambda = stnn$lambda,
+                                        response = stnn$response)
 
   stnn$X <- X
 
@@ -201,8 +248,15 @@ statnn.nn <- function(object, B = 1000, ...) {
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
-    "y", "B"
+    "y", "B", "response", "lambda"
   )
+  
+  # NOTE: Will need to make more general for multiclass classification
+  if (attr(object$err.fct, "type") == "ce") {
+    response <- "binary"
+  } else {
+    response <- "continuous"
+  }
   
   stnn <- sapply(stnn_names, function(x) NULL)
   
@@ -249,9 +303,18 @@ statnn.nn <- function(object, B = 1000, ...) {
   
   stnn$y <- object$response
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  stnn$response <- response
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  # neuralnet does not support weight decay unless you provide your own err.fct 
+  stnn$lambda <- 0 
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
+                         lambda = stnn$lambda,
+                         response = stnn$response)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
+                                        lambda = stnn$lambda,
+                                        response = stnn$response)
   
   stnn$X <- X
   
@@ -371,8 +434,16 @@ statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
-    "y", "B"
+    "y", "B", "response", "lambda"
   )
+  
+  # NOTE: Will need to make more general for multiclass classification
+  if (all(levels(factor(y)) %in% c(0, 1)) &
+      length(levels(factor(y))) == 2) {
+    response <- "binary"
+  } else {
+    response <- "continuous"
+  }
   
   stnn <- sapply(stnn_names, function(x) NULL)
   
@@ -420,9 +491,18 @@ statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
   
   stnn$y <- y
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  stnn$response <- response
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  stnn$lambda <-  ifelse(is.null(object$ctx$opt_hparams$weight_decay), 0,
+                         object$ctx$opt_hparams$weight_decay)
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
+                         lambda = stnn$lambda,
+                         response = stnn$response)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
+                                        lambda = stnn$lambda,
+                                        response = stnn$response)
   
   stnn$X <- X
   

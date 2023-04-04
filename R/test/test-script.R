@@ -59,7 +59,7 @@ model %>% compile(
 #               bias_regularizer = regularizer_l2(l = 0.01))
 
 nn_keras <- model %>%
-  fit(X, y, epochs = 100, batch_size = nrow(X))
+  fit(X, y, epochs = 200, batch_size = nrow(X))
 
 keras_weights <- model %>% get_weights()
 

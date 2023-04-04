@@ -59,7 +59,7 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
 
   stnn$n <- nrow(object$residuals)
 
-  stnn$loglike <- nn_loglike(object)
+  stnn$loglike <- nn_loglike(object, X = X)
 
   stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
 
@@ -468,8 +468,8 @@ statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
   stnn$n <- nrow(X)
   
   if (response == "binary") {
-    stnn$val <- y * log(nn_pred(X, stnn$weights, stnn$n_nodes, response = "binary")) +
-      (1 - y) * log(1 - nn_pred(X, stnn$weights, stnn$n_nodes, response = "binary"))
+    stnn$val <- - (y * log(nn_pred(X, stnn$weights, stnn$n_nodes, response = "binary")) +
+      (1 - y) * log(1 - nn_pred(X, stnn$weights, stnn$n_nodes, response = "binary")))
   } else {
     stnn$val <- sum((nn_pred(X, stnn$weights, stnn$n_nodes) - y)^2)
   }

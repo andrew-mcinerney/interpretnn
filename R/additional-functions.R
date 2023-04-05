@@ -84,12 +84,13 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
     
     fitted <- modnn %>%
       luz::fit(
-        data = list(X, y),
+        data = list(as.matrix(X), y),
         epochs = maxit,
         verbose = FALSE,
         callbacks = list(luz::luz_callback_early_stopping(monitor = "train_loss", 
                                                      min_delta =  min_delta, 
-                                                     patience = patience)),
+                                                     patience = patience),
+                         print_callback()),
         dataloader_options = list(batch_size = batch_size)
       )
     
@@ -164,3 +165,9 @@ nnet_to_torch <- function(nnet_w, p, q) {
   return(torch_w)
 }
 
+print_callback <- luz::luz_callback(
+  name = "print_callback",
+  on_fit_end = function() {
+    cat("Iteration ", iter, "Done \n")
+  }
+)

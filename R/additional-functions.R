@@ -41,9 +41,9 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
   converge <- rep(NA, n_init)
   
   if (response == "continuous") {
-    loss <- nn_mse_loss()
+    loss <- torch::nn_mse_loss()
   } else if (response == "binary") {
-    loss <- nn_bce_loss()
+    loss <- torch::nn_bce_loss()
   } else {
     stop(sprintf(
       "Error: %s not recognised as task. Please choose regression or classification",

@@ -54,13 +54,13 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
   for (iter in 1:n_init) {
     w_torch <- nnet_to_torch(weight_matrix_init[iter, ], p, q)
     
-    modnn <- nn_module(
+    modnn <- torch::nn_module(
       initialize = function(input_size) {
-        self$hidden <- nn_linear(input_size, q)
+        self$hidden <- torch::nn_linear(input_size, q)
         self$hidden$register_parameter("weight", w_torch$hidden.weight)
         self$hidden$register_parameter("bias", w_torch$hidden.bias)
-        self$activation <- nn_sigmoid()
-        self$output <- nn_linear(q, 1)
+        self$activation <- torch::nn_sigmoid()
+        self$output <- torch::nn_linear(q, 1)
         self$output$register_parameter("weight", w_torch$output.weight)
         self$output$register_parameter("bias", w_torch$output.bias)
       },
@@ -74,20 +74,20 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
     
     
     modnn <- modnn %>%
-      setup(
+      luz::setup(
         loss = loss,
-        optimizer = optim_rmsprop,
-        metrics = list(luz_metric_accuracy(), luz_metric_mse())
+        optimizer = torch::optim_rmsprop,
+        metrics = list(luz::luz_metric_accuracy(), luz::luz_metric_mse())
       ) %>%
-      set_hparams(input_size = p) %>% 
-      set_opt_hparams(weight_decay = lambda)
+      luz::set_hparams(input_size = p) %>% 
+      luz::set_opt_hparams(weight_decay = lambda)
     
     fitted <- modnn %>%
-      fit(
+      luz::fit(
         data = list(X, y),
         epochs = maxit,
         verbose = FALSE,
-        callbacks = list(luz_callback_early_stopping(monitor = "train_loss", 
+        callbacks = list(luz::luz_callback_early_stopping(monitor = "train_loss", 
                                                      min_delta =  min_delta, 
                                                      patience = patience)),
         dataloader_options = list(batch_size = batch_size)

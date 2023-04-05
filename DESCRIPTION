@@ -23,4 +23,6 @@ Imports:
     methods,
     nnet,
     numDeriv,
-    torch
+    torch,
+    luz,
+    magrittr

@@ -40,6 +40,8 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
   inf_crit_vec <- rep(NA, n_init)
   converge <- rep(NA, n_init)
   
+  nn <- vector("list", length = n_init)
+  
   if (response == "continuous") {
     loss <- torch::nn_mse_loss()
   } else if (response == "binary") {
@@ -105,20 +107,22 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
                                         (log(n) * (k + 1) - 2 * log_likelihood),
                                         ifelse(inf_crit == "AICc",
                                                (2 * (k + 1) * (n / (n - (k + 1) - 1)) - 2 * log_likelihood),
-                                               NA
-                                        )
-                                 )
-    )
+                                               NA)))
+    
     converge[iter] <- length(fitted$records$metrics$train) < maxit
+    nn[[iter]] <- fitted
   }
   W_opt <- weight_matrix[which.min(inf_crit_vec), ]
+  
+  nn <- nn[[which.min(inf_crit_vec)]]
   
   return(list(
     "W_opt" = W_opt,
     "value" = min(inf_crit_vec),
     "inf_crit_vec" = inf_crit_vec,
     "weight_matrix" = weight_matrix,
-    "convergence" = converge
+    "convergence" = converge,
+    "nn" = nn 
   ))
 }
 

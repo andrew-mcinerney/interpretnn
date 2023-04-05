@@ -22,4 +22,5 @@ Imports:
     MASS,
     methods,
     nnet,
-    numDeriv
+    numDeriv,
+    torch

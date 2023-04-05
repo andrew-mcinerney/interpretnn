@@ -12,6 +12,8 @@ nn_pred <- function(X, W, q, response = "continuous") {
   n <- nrow(X)
   p <- ncol(X)
   
+  X <- as.matrix(X)
+  
   k <- sum(c(p + 1, q + 1) * c(q, 1))
   
   layer_nodes <- c(0, cumsum(c(p + 1, q + 1) * c(q, 1)))

@@ -171,6 +171,6 @@ print_callback <- luz::luz_callback(
     self$iter <- iter
   },
   on_fit_end = function(iter) {
-    cat("Iteration ", iter, "Done \n")
+    cat("Iteration ", self$iter, "Done \n")
   }
 )

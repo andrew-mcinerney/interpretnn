@@ -2,7 +2,7 @@ pandoc: 2.17.1.1
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2023-04-06T15:40Z
+last_built: 2023-04-06T15:43Z
 urls:
   reference: https://andrew-mcinerney.github.io/statnn/reference
   article: https://andrew-mcinerney.github.io/statnn/articles

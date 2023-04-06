@@ -24,6 +24,8 @@ plotnn(
   col.intercept = "black",
   col.sig.synapse = "black",
   col.insig.synapse = "lightgrey",
+  col.sig.node = "black",
+  col.insig.node = "lightgrey",
   fontsize = 12,
   dimension = 6,
   show.weights = FALSE,
@@ -78,6 +80,10 @@ neurons.}
 \item{col.sig.synapse}{color of the significant synapses.}
 
 \item{col.insig.synapse}{color of the insignificant synapses.}
+
+\item{col.sig.node}{color of the significant input nodes.}
+
+\item{col.insig.node}{color of the insignificant input nodes.}
 
 \item{fontsize}{fontsize of the text.}
 

@@ -29,6 +29,8 @@
 #' @param col.intercept color of the intercept.
 #' @param col.sig.synapse color of the significant synapses.
 #' @param col.insig.synapse color of the insignificant synapses.
+#' @param col.sig.node color of the significant input nodes.
+#' @param col.insig.node color of the insignificant input nodes.
 #' @param fontsize fontsize of the text.
 #' @param dimension size of the plot in inches.
 #' @param show.weights a logical value indicating whether to print the
@@ -50,6 +52,7 @@ plotnn <-
             col.entry = "black", col.hidden = "black", col.hidden.synapse = "black",
             col.out = "black", col.out.synapse = "black", col.intercept = "black",
             col.sig.synapse = "black", col.insig.synapse = "lightgrey",
+            col.sig.node = "black", col.insig.node = "lightgrey",
             fontsize = 12, dimension = 6, show.weights = FALSE, file = NULL,
             rounding = 3, alpha = 0.05, lambda = 0,
             ...)
@@ -62,15 +65,19 @@ plotnn <-
              nrow = p + 1, ncol = q),
       matrix(net$weights[((p + 1) * q + 1):length(net$weights)],
              nrow = q + 1, ncol = 1)))
-    p_values <- net$wald_sp$p_value
-    sig <- p_values < alpha
+    p_values_w <- net$wald_sp$p_value
+    sig_w <- p_values_w < alpha
     
-    sig <- ifelse(sig, col.sig.synapse, col.insig.synapse)
+    p_values_n <- net$wald$p_value
+    sig_n <- p_values_n < alpha
+    
+    sig_w <- ifelse(sig_w, col.sig.synapse, col.insig.synapse)
     synapse.col <- list(
-      matrix(sig[1:((p + 1) * q)],
+      matrix(sig_w[1:((p + 1) * q)],
              nrow = p + 1, ncol = q),
-      matrix(sig[((p + 1) * q + 1):length(sig)],
+      matrix(sig_w[((p + 1) * q + 1):length(sig_w)],
              nrow = q + 1, ncol = 1))
+    sig_n <- ifelse(sig_n, col.sig.node, col.insig.node)
     
     if (is.null(net$weights))
       stop("weights were not calculated")
@@ -86,7 +93,7 @@ plotnn <-
                intercept, intercept.factor, information, information.pos,
                col.entry.synapse, col.entry, col.hidden, col.hidden.synapse,
                col.out, col.out.synapse, col.intercept, col.sig.synapse,
-               col.insig.synapse, fontsize,
+               col.insig.synapse, col.sig.node, col.insig.node, fontsize,
                dimension, show.weights, file.rep, rounding = rounding,
                alpha = alpha, lambda = lambda, ...)
       }
@@ -194,7 +201,7 @@ plotnn <-
                       alignment = c("right", "bottom"),
                       fontsize = fontsize, ...)
             grid::grid.circle(x = x.position[k], y = y.position[k],
-                              r = radius, gp = grid::gpar(fill = "white", col = col.entry,
+                              r = radius, gp = grid::gpar(fill = "white", col = rev(sig_n)[i],
                                                           ...))
             # grid::grid.text(paste0("X", i), x = x.position[k], y = y.position[k],
             #                 gp = grid::gpar(col = col.entry.synapse,

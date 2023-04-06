@@ -10,6 +10,9 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/LICENSE-text.html</loc>
+  </url>
+  <url>
     <loc>/LICENSE.html</loc>
   </url>
   <url>
@@ -37,16 +40,34 @@
     <loc>/reference/mlesim.html</loc>
   </url>
   <url>
+    <loc>/reference/nnet_to_torch.html</loc>
+  </url>
+  <url>
+    <loc>/reference/nn_fit_torch.html</loc>
+  </url>
+  <url>
     <loc>/reference/nn_fit_tracks.html</loc>
   </url>
   <url>
     <loc>/reference/nn_loglike.html</loc>
   </url>
   <url>
+    <loc>/reference/nn_loss.html</loc>
+  </url>
+  <url>
     <loc>/reference/nn_pred.html</loc>
   </url>
   <url>
+    <loc>/reference/pce.html</loc>
+  </url>
+  <url>
     <loc>/reference/pdp_effect.html</loc>
+  </url>
+  <url>
+    <loc>/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotnn.html</loc>
   </url>
   <url>
     <loc>/reference/selectnn.html</loc>
@@ -55,7 +76,22 @@
     <loc>/reference/sigmoid.html</loc>
   </url>
   <url>
+    <loc>/reference/statnn-methods.html</loc>
+  </url>
+  <url>
+    <loc>/reference/statnn.html</loc>
+  </url>
+  <url>
     <loc>/reference/statnnet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/torch_to_nnet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/VC.html</loc>
+  </url>
+  <url>
+    <loc>/reference/wald_single_parameter.html</loc>
   </url>
   <url>
     <loc>/reference/wald_test.html</loc>

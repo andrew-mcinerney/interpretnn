@@ -26,3 +26,7 @@ Imports:
     torch,
     luz,
     magrittr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

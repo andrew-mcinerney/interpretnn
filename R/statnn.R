@@ -22,7 +22,7 @@ statnn <- function(...) UseMethod("statnn")
 #' @return statnn object
 #' @export
 statnn.nnet <- function(object, X, B = 1000, ...) {
-  if (class(object)[1] != "nnet") {
+  if (class(object)[1] != "nnet" & class(object)[1] != "nnet.formula") {
     stop("Error: Argument must be of class nnet")
   }
 

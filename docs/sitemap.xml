@@ -4,6 +4,12 @@
     <loc>https://andrew-mcinerney.github.io/statnn/404.html</loc>
   </url>
   <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/articles/boston.html</loc>
+  </url>
+  <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/articles/index.html</loc>
+  </url>
+  <url>
     <loc>https://andrew-mcinerney.github.io/statnn/authors.html</loc>
   </url>
   <url>
@@ -20,6 +26,9 @@
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/delta_method.html</loc>
+  </url>
+  <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/reference/hessian.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/hidden_node_sel.html</loc>

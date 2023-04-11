@@ -125,7 +125,7 @@ delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
 }
 
 
-#' Calculate variance-covariance matrix for nnet object
+#' Calculate variance-covariance matrix 
 #'
 #'
 #' @param W Weight vector
@@ -135,7 +135,7 @@ delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
-#' @return Effect for each input
+#' @return Hessian matrix
 #' @export
 VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
   
@@ -153,7 +153,7 @@ VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
   }
   
   loss <- nn_loss(W, X, y, q, lambda, response)
-  hess <- numDeriv::hessian(nn_loss, W, X = X, y = y, q = q, lambda = lambda,
+  hess <- hessian(W, X = X, y = y, q = q, lambda = lambda,
                             response = response)
   
   
@@ -164,17 +164,52 @@ VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
     I_0 <- hess
   }
   
+  if(any(eigen(I_0)$values < 0)) {
+    stop("Error: variance-covariance matrix is not positive definite")
+  }
+  
   P <- diag(length(W)) * 2 * lambda
   
   I_p <- I_0 + P
   
-  vc <- solve(I_p) %*% I_0 %*% solve(I_p)
-  
-  if(any(eigen(vc)$values < 0)) {
-    stop("Error: variance-covariance matrix is not positive definite")
-  }
+  vc <- chol2inv(chol(I_p)) %*% I_0 %*% chol2inv(chol(I_p))
   
   return(vc)
   
 }
 
+
+#' Calculate hessian matrix 
+#'
+#'
+#' @param W Weight vector
+#' @param X Data
+#' @param y Response
+#' @param q Number of hidden units
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @return Hessian matrix 
+#' @export
+hessian <- function(W, X, y, q, lambda = 0, response = "continuous") {
+  
+  if (response == "continuous") {
+    linout <- TRUE
+    entropy <- FALSE
+  } else if (response == "binary") {
+    linout <- FALSE
+    entropy <- TRUE
+  } else {
+    stop(sprintf(
+      "Error: %s not recognised as response. Please choose continuous or binary",
+      response
+    ))
+  }
+  
+  nn <- nnet::nnet(X, y, size = q, trace = FALSE, maxit = 0, Wts = W,
+                   decay = lambda, linout = linout, entropy = entropy)
+  
+  hess <- nnet::nnetHess(nn, X, y)
+  
+  return(hess)
+}

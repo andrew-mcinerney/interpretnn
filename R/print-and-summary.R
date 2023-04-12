@@ -60,6 +60,9 @@ summary.statnn <- function(object, wald_single_par = FALSE, ...) {
              sapply(X = 1:object$n_nodes[1],
                     FUN = function(x) 
                       (x - 1) * (object$n_inputs + 1) + 1 + ind)))
+  
+  # need when q = 1
+  covariate_indices <- matrix(covariate_indices, nrow = object$n_inputs)
 
   coefdf <- data.frame(
     Covariate = covariates,

@@ -1,4 +1,4 @@
-#' Plot method for neural networks
+#' Plot neural network architecture 
 #'
 #' \code{plotnn} It is designed for an inspection of the weights for objects of
 #' class \code{statnn}.

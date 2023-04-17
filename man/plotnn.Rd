@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotnn.R
 \name{plotnn}
 \alias{plotnn}
-\title{Plot method for neural networks}
+\title{Plot neural network architecture}
 \usage{
 plotnn(
   x,

@@ -19,9 +19,6 @@
     <loc>https://andrew-mcinerney.github.io/statnn/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/LICENSE.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/covariate_eff.html</loc>
   </url>
   <url>
@@ -31,16 +28,7 @@
     <loc>https://andrew-mcinerney.github.io/statnn/reference/hessian.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/hidden_node_sel.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/input_importance.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/input_node_sel.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/lr_test.html</loc>
@@ -70,9 +58,6 @@
     <loc>https://andrew-mcinerney.github.io/statnn/reference/pce.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/pdp_effect.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/pipe.html</loc>
   </url>
   <url>
@@ -82,9 +67,6 @@
     <loc>https://andrew-mcinerney.github.io/statnn/reference/plotnn.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/selectnn.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/sigmoid.html</loc>
   </url>
   <url>
@@ -92,9 +74,6 @@
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/statnn.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/statnnet.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/torch_to_nnet.html</loc>

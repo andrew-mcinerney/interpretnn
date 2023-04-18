@@ -64,7 +64,7 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
       theta_x <- weights[ind_vec]
       vc_x <- vc[ind_vec, ind_vec]
       
-      plot_points <- t(combn(ind_vec, 2))
+      plot_points <- t(utils::combn(ind_vec, 2))
       
       ind_points <- matrix(match(plot_points, ind_vec), ncol = 2)
       
@@ -76,7 +76,7 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
         vc_x_temp <- vc_x[ind_points[j, ], ind_points[j, ]]
         theta_x_temp <- theta_x[ind_points[j, ]]
         
-        radius <- sqrt(qchisq(1 - alpha, df = 2))
+        radius <- sqrt(stats::qchisq(1 - alpha, df = 2))
         ellipse <- car::ellipse(shape = vc_x_temp, center = theta_x_temp, radius = radius, 
                                 draw = FALSE)
         
@@ -102,9 +102,6 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
         grDevices::dev.flush()
       }
     }
-  }
-  if (!one.fig && graphics::par("oma")[3L] >= 1) {
-    graphics::mtext(sub.caption, outer = TRUE, cex = cex.oma.main)
   }
   invisible()
 }

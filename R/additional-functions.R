@@ -56,6 +56,8 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
   for (iter in 1:n_init) {
     w_torch <- nnet_to_torch(weight_matrix_init[iter, ], p, q)
     
+    self <- NULL
+    
     modnn <- torch::nn_module(
       initialize = function(input_size) {
         self$hidden <- torch::nn_linear(input_size, q)

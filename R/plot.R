@@ -129,14 +129,14 @@ plot.statnn <-
         }
         if (conf_int == TRUE) {
           if (length(xaxis[[i]]) > 1) {
-            polygon(c(rev(xaxis[[i]]), xaxis[[i]]),
+            graphics::polygon(c(rev(xaxis[[i]]), xaxis[[i]]),
                     c(rev(conf_val[[i]]$upper), conf_val[[i]]$lower),
                     col = 'grey80', border = NA)
             graphics::lines(xaxis[[i]], conf_val[[i]]$upper, lty = 2, col = 1, ...)
             graphics::lines(xaxis[[i]], conf_val[[i]]$lower, lty = 2, col = 1, ...)
             graphics::lines(xaxis[[i]], cov_effs[[i]], ...)
           } else {
-            arrows(xaxis[[i]], conf_val[[i]]$lower,
+            graphics::arrows(xaxis[[i]], conf_val[[i]]$lower,
                    xaxis[[i]], conf_val[[i]]$upper, 
                    length = 0.05, angle = 90, code = 3)
           }

@@ -25,8 +25,15 @@ Imports:
     numDeriv,
     torch,
     luz,
-    magrittr
+    magrittr,
+    caret,
+    car,
+    rlang,
+    R6
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)
+LazyData: true

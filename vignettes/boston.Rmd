@@ -30,7 +30,6 @@ preprocessing.
 
 ```{r, message=FALSE, warning=FALSE}
 library(nnet)
-library(ISLR2)
 library(caret)
 ```
 

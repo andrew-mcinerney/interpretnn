@@ -213,3 +213,56 @@ hessian <- function(W, X, y, q, lambda = 0, response = "continuous") {
   
   return(hess)
 }
+
+#' torch weights to nnet weights
+#'
+#'
+#' @param torch_w weights in torch format
+#' @return weights in nnet format
+#' @export
+torch_to_nnet <- function(torch_w) {
+  nnet_w <- c(
+    as.vector(t(cbind(as.matrix(torch_w$hidden.bias),
+                      as.matrix(torch_w$hidden.weight)))),
+    cbind(as.matrix(torch_w$output.bias),
+          as.matrix(torch_w$output.weight))
+  )
+  
+  return(nnet_w)
+}
+
+#' nnet weights to torch weights
+#'
+#'
+#' @param nnet_w weights in nnet format
+#' @param p number of inputs
+#' @param q number of hidden nodes
+#' @return weights in torch format
+#' @export
+nnet_to_torch <- function(nnet_w, p, q) {
+  hidden_b_ind <- sapply(1:q, function(x) (x - 1) * (p + 1) + 1)
+  hidden_w_ind <- c(1:((p + 1) * q))[-hidden_b_ind]
+  
+  output_b_ind <- (p + 1) * q + 1
+  output_w_ind <- ((p + 1) * q + 2):((p + 2) * q + 1)
+  
+  torch_w <- vector("list")
+  torch_w$hidden.weight <- matrix(nnet_w[hidden_w_ind], nrow = q, byrow = TRUE)
+  torch_w$hidden.bias <- nnet_w[hidden_b_ind]
+  torch_w$output.weight <- matrix(nnet_w[output_w_ind], ncol = 2)
+  torch_w$output.bias <- nnet_w[output_b_ind]
+  
+  torch_w <- lapply(torch_w, torch::torch_tensor, requires_grad = TRUE)
+  
+  return(torch_w)
+}
+
+print_callback <- luz::luz_callback(
+  name = "print_callback",
+  initialize = function(iter) {
+    self$iter <- iter
+  },
+  on_fit_end = function(iter) {
+    cat("Iteration ", self$iter, "Done \n")
+  }
+)

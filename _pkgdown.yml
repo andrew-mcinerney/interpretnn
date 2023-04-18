@@ -1,5 +1,3 @@
 url: https://andrew-mcinerney.github.io/statnn/
 template:
   bootstrap: 5
-development:
-  mode: auto

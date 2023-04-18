@@ -7,10 +7,19 @@
     <loc>https://andrew-mcinerney.github.io/statnn/LICENSE-text.html</loc>
   </url>
   <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/articles/boston.html</loc>
+  </url>
+  <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/articles/index.html</loc>
+  </url>
+  <url>
     <loc>https://andrew-mcinerney.github.io/statnn/authors.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/index.html</loc>
+  </url>
+  <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/reference/Boston.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/VC.html</loc>
@@ -20,6 +29,9 @@
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/delta_method.html</loc>
+  </url>
+  <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/reference/hessian.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/index.html</loc>
@@ -53,6 +65,9 @@
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://andrew-mcinerney.github.io/statnn/reference/plotci.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/plotnn.html</loc>

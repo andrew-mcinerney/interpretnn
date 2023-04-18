@@ -1,3 +1,24 @@
+#' Fits various tracks (different random starting values) and chooses best model
+#'
+#' Fits n_init tracks with different initial values and decides on best model
+#' based on information criteria.
+#'
+#' @param X Matrix of covariates
+#' @param y Vector of response
+#' @param q Number of hidden nodes
+#' @param n_init Number of random initialisations (tracks)
+#' @param inf_crit Information criterion: `"BIC"` (default), `"AIC"` or
+#'  `"AICc"`
+#' @param lambda Ridge penalty
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @param unif Random initial values max value
+#' @param maxit Maximum number of iterations for nnet (default = 100)
+#' @param pkg Package for fitting neural network. One of `nnet` (default) or
+#' `torch`
+#' @param ... additional argument for nnet
+#' @return The best model from the different initialisations
+#' @export
 nn_fit <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
                    response = "continuous", unif = 3, maxit = 1000,
                    pkg = "nnet", ...) {
@@ -20,6 +41,9 @@ nn_fit <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
       pkg
     ))
   }
+  nn$X  <- X
+  nn$y <- y
+  return(nn)
 }
 
 #' Fits various tracks (different random starting values) and chooses best model

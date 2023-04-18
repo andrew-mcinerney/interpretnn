@@ -43,10 +43,10 @@
     <loc>https://andrew-mcinerney.github.io/statnn/reference/mlesim.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/nn_fit_torch.html</loc>
+    <loc>https://andrew-mcinerney.github.io/statnn/reference/nn_fit_nnet.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/statnn/reference/nn_fit_tracks.html</loc>
+    <loc>https://andrew-mcinerney.github.io/statnn/reference/nn_fit_torch.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/statnn/reference/nn_loglike.html</loc>

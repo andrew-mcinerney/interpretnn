@@ -13,6 +13,20 @@
 #' @export
 statnn <- function(...) UseMethod("statnn")
 
+#' @rdname statnn
+#' @param object object from nn_fit
+#' @param X matrix of input data 
+#' @param y response variable
+#' @param B number of bootstrap replicates
+#' @param ... arguments passed to or from other methods
+#' @return statnn object
+#' @export
+statnn.default <- function(object, B = 1000, ...) {
+  
+  stnn <- statnn(object$nn, X = object$X, y = object$y, B = B)
+  
+  return(stnn)
+}
 
 #' @rdname statnn
 #' @param object nnet object

@@ -2,6 +2,7 @@
 % Please edit documentation in R/statnn.R
 \name{statnn}
 \alias{statnn}
+\alias{statnn.default}
 \alias{statnn.nnet}
 \alias{statnn.keras.engine.training.Model}
 \alias{statnn.nn}
@@ -10,6 +11,8 @@
 \title{Statistically-Based Neural Networks}
 \usage{
 statnn(...)
+
+statnn.default(object, B = 1000, ...)
 
 statnn.nnet(object, X, B = 1000, ...)
 
@@ -26,9 +29,9 @@ statnn.luz_module_fitted(object, X, y, B = 1000, ...)
 
 \item{object}{nnet object}
 
-\item{X}{matrix of input data}
-
 \item{B}{number of bootstrap replicates}
+
+\item{X}{matrix of input data}
 
 \item{y}{response variable}
 }
@@ -37,6 +40,8 @@ A list with information of the optimal model.
 \itemize{
 \item \code{statnn} - object of class statnn.
 }
+
+statnn object
 
 statnn object
 

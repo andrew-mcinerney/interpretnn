@@ -75,9 +75,9 @@ the results from the multiple-parameter Wald test for each input.
 We can visualise the covariate effects and their associated uncertainty using
 the `plot()` function, which creates Partial Covariate Effect (PCE) plots.
 
-```{r, cache = TRUE}
-plot(stnn, conf_int = TRUE)
-```
+<!-- ```{r, cache = TRUE} -->
+<!-- plot(stnn, conf_int = TRUE) -->
+<!-- ``` -->
 
 There is also a `plotnn()` function that visualise the significance of each weight
 from the single-parameter Wald test.

@@ -100,8 +100,7 @@ nn_fit_nnet <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
   }
   
   for (iter in 1:n_init) {
-    nn_model <- nnet::nnet(y ~ .,
-                           data = df, size = q, trace = FALSE,
+    nn_model <- nnet::nnet(x = X, y = y, size = q, trace = FALSE,
                            linout = linout, entropy = entropy,
                            Wts = weight_matrix_init[iter, ], maxit = maxit,
                            decay = lambda, ...

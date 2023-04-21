@@ -14,29 +14,39 @@ wald_test <- function(X, y, W, q, lambda = 0, response = "continuous") {
   p <- ncol(X)
   n <- nrow(X)
   
+  k <- length(W)
+  
   vc <- VC(W, X, y, q, lambda = lambda, response = response)
-
+  
   p_values <- rep(NA, p)
   chisq <- rep(NA, p)
   p_values_f <- rep(NA, p)
-
+  
   for (i in 1:p) {
     
     ind_vec <- sapply(
       X = 1:q[1],
       FUN = function(x) (x - 1) * (p + 1) + 1 + i
     )
-
+    
     theta_x <- W[ind_vec]
     vc_inv_x <- solve(vc[ind_vec, ind_vec])
-
+    
     chisq[i] <- t(theta_x) %*% vc_inv_x %*% theta_x
-
+    
     p_values[i] <- 1 - stats::pchisq(chisq[i], df = q[1])
     p_values_f[i] <- 1 - stats::pf(chisq[i] / q[1], df1 = q[1], df2 = n - length(W))
   }
-
-  return(list("chisq" = chisq, "p_value" = p_values, "p_value_f" = p_values_f))
+  
+  chisq_sp <- (W^2) / diag(vc)
+  p_values_sp <- 1 - stats::pchisq(chisq_sp, df = 1)
+  
+  ci <- matrix(NA, nrow = k, ncol = 2)
+  ci[, 1] <- W + stats::qnorm(0.025) * sqrt(diag(vc))
+  ci[, 2] <- W + stats::qnorm(0.975) * sqrt(diag(vc))
+  
+  return(list("chisq" = chisq, "p_value" = p_values, "p_value_f" = p_values_f,
+              "chisq_sp" = chisq_sp, "p_value_sp" = p_values_sp, "ci" = ci))
 }
 
 

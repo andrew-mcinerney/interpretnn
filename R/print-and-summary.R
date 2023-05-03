@@ -141,7 +141,7 @@ print.summary.statnn <- function(x, ...) {
 
   # cat("Call (nnet):\n")
   # print(x$call)
-  cat("Call (statnnet):\n")
+  cat("Call (statnn):\n")
   print(x$cl)
   cat("\n")
   cat("Number of input nodes:", x$n_inputs, "\n")

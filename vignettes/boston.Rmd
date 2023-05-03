@@ -46,6 +46,11 @@ X <- predict(std, Boston)[, -ncol(Boston)]
 y <- predict(std, Boston)[, ncol(Boston)]
 ```
 
+```{r, echo = FALSE}
+std_y <- caret::preProcess(data.frame("medv" = Boston[, ncol(Boston)]))
+y <- as.matrix(predict(std_y, data.frame("medv" = Boston[, ncol(Boston)])))
+```
+
 Next, we fit a neural network.
 As neural networks require random initial weights to begin learning, we use
 `set.seed()` for reproducibility.
@@ -80,6 +85,8 @@ the `plot()` function, which creates Partial Covariate Effect (PCE) plots.
 
 There is also a `plotnn()` function that visualise the significance of each weight
 from the single-parameter Wald test.
+
+
 ```{r}
 plotnn(stnn)
 ```

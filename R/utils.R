@@ -152,8 +152,8 @@ VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
     ))
   }
   
-  loss <- nn_loss(W, X, y, q, lambda, response)
-  hess <- hessian(W, X = X, y = y, q = q, lambda = lambda,
+  loss <- nn_loss(W, X, y, q, 0, response)
+  hess <- hessian(W, X = X, y = y, q = q, lambda = 0,
                             response = response)
   
   

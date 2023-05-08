@@ -8,7 +8,7 @@
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
-#'  @param alpha significance level for confidence interval
+#' @param alpha significance level for confidence interval
 #' @return Wald hypothesis test for each input
 #' @export
 wald_test <- function(X, y, W, q, lambda = 0, response = "continuous",
@@ -126,7 +126,7 @@ lr_test <- function(X, y, W, q, n_init = 1, unif = 3, maxit = 1000, ...) {
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
-#'  @param alpha Significance level for confidence interval
+#' @param alpha Significance level for confidence interval
 #' @return Wald hypothesis test for each weight
 #' @export
 wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuous", 

@@ -26,8 +26,9 @@ wald_single_parameter(
 \item{lambda}{Ridge penalty. Default is 0.}
 
 \item{response}{Response type: \code{"continuous"} (default) or
-\code{"binary"}
-@param alpha Significance level for confidence interval}
+\code{"binary"}}
+
+\item{alpha}{Significance level for confidence interval}
 }
 \value{
 Wald hypothesis test for each weight

@@ -180,7 +180,7 @@ print.summary.statnn <- function(x, ...) {
 }
 
 #' @export
-predict.statnn <- function(object, newdata) {
+predict.statnn <- function(object, newdata, ...) {
   if (!inherits(object, "statnn")) 
     warning("calling predict.lm(<fake-statnn-object>) ...")
   

@@ -75,10 +75,10 @@ nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 
                            response = "continuous", unif = 3, maxit = 1000,
                            pkg = "nnet", ...) {
   
-  x <- model.matrix(formula, data = data)[, -1] 
+  x <- stats::model.matrix(formula, data = data)[, -1] 
   
-  y <- as.matrix(model.extract(model.frame(formula, data = data), "response"),
-                 ncol = 1)
+  y <- as.matrix(stats::model.extract(stats::model.frame(formula, data = data),
+                                      "response"), ncol = 1)
   
   nn <- nn_fit.default(x, y, q = q, n_init = n_init, inf_crit = inf_crit,
                        lambda = lambda, response = response, unif = unif,

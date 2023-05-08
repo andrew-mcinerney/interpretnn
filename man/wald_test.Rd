@@ -18,8 +18,9 @@ wald_test(X, y, W, q, lambda = 0, response = "continuous", alpha = 0.05)
 \item{lambda}{Ridge penalty. Default is 0.}
 
 \item{response}{Response type: \code{"continuous"} (default) or
-\code{"binary"}
-@param alpha significance level for confidence interval}
+\code{"binary"}}
+
+\item{alpha}{significance level for confidence interval}
 }
 \value{
 Wald hypothesis test for each input

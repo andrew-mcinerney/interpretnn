@@ -34,7 +34,7 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
   
   sp_ci <- wald_single_parameter(object$X, object$y, object$weights,
                                  object$n_nodes, object$lambda,
-                                 object$response)$ci
+                                 object$response, alpha)$ci
   
   p <- object$n_inputs
   q <- object$n_nodes

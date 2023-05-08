@@ -8,9 +8,11 @@
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
+#'  @param alpha significance level for confidence interval
 #' @return Wald hypothesis test for each input
 #' @export
-wald_test <- function(X, y, W, q, lambda = 0, response = "continuous") {
+wald_test <- function(X, y, W, q, lambda = 0, response = "continuous",
+                      alpha = 0.05) {
   p <- ncol(X)
   n <- nrow(X)
   
@@ -42,8 +44,8 @@ wald_test <- function(X, y, W, q, lambda = 0, response = "continuous") {
   p_values_sp <- 1 - stats::pchisq(chisq_sp, df = 1)
   
   ci <- matrix(NA, nrow = k, ncol = 2)
-  ci[, 1] <- W + stats::qnorm(0.025) * sqrt(diag(vc))
-  ci[, 2] <- W + stats::qnorm(0.975) * sqrt(diag(vc))
+  ci[, 1] <- W + stats::qnorm(alpha / 2) * sqrt(diag(vc))
+  ci[, 2] <- W + stats::qnorm(1 - alpha / 2) * sqrt(diag(vc))
   
   return(list("chisq" = chisq, "p_value" = p_values, "p_value_f" = p_values_f,
               "chisq_sp" = chisq_sp, "p_value_sp" = p_values_sp, "ci" = ci))
@@ -124,9 +126,11 @@ lr_test <- function(X, y, W, q, n_init = 1, unif = 3, maxit = 1000, ...) {
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
+#'  @param alpha Significance level for confidence interval
 #' @return Wald hypothesis test for each weight
 #' @export
-wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuous"){
+wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuous", 
+                                   alpha = 0.05){
   p <- ncol(X)
   n <- nrow(X)
   k <- length(W)
@@ -137,8 +141,8 @@ wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuou
   p_values <- 1 - stats::pchisq(chisq, df = 1)
   
   ci <- matrix(NA, nrow = k, ncol = 2)
-  ci[, 1] <- W + stats::qnorm(0.025) * sqrt(diag(vc))
-  ci[, 2] <- W + stats::qnorm(0.975) * sqrt(diag(vc))
+  ci[, 1] <- W + stats::qnorm(alpha / 2) * sqrt(diag(vc))
+  ci[, 2] <- W + stats::qnorm(1 - alpha / 2) * sqrt(diag(vc))
   
   
   return(list("chisq" = chisq, "p_value" = p_values, "ci" = ci))

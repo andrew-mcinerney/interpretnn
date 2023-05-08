@@ -4,7 +4,15 @@
 \alias{wald_single_parameter}
 \title{Wald test for weights}
 \usage{
-wald_single_parameter(X, y, W, q, lambda = 0, response = "continuous")
+wald_single_parameter(
+  X,
+  y,
+  W,
+  q,
+  lambda = 0,
+  response = "continuous",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{X}{Data}
@@ -18,7 +26,8 @@ wald_single_parameter(X, y, W, q, lambda = 0, response = "continuous")
 \item{lambda}{Ridge penalty. Default is 0.}
 
 \item{response}{Response type: \code{"continuous"} (default) or
-\code{"binary"}}
+\code{"binary"}
+@param alpha Significance level for confidence interval}
 }
 \value{
 Wald hypothesis test for each weight

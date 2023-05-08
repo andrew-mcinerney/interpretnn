@@ -87,36 +87,26 @@
 <p>To begin, load the <code>statnn</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/andrew-mcinerney/statnn" class="external-link">statnn</a></span><span class="op">)</span></span></code></pre></div>
-<p>There are three other packages that we will load. The first is the
-package we will use to fit the neural network. Our package works with a
-number of popular R packages for neural networks, and here we will use
-the <code>nnet</code> package. The second is the <code>ISLR2</code>
-package, which contains the Boston Housing data set. Finally, the third
-package, <code>caret</code>, will be used for some data
-preprocessing.</p>
+<p>Also, load the package that we will use to fit the neural network.
+Our package works with a number of popular R packages for neural
+networks, and here we will use the <code>nnet</code> package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">nnet</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/topepo/caret/" class="external-link">caret</a></span><span class="op">)</span></span></code></pre></div>
-<p>We first load the data and do some preprocessing.</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">nnet</a></span><span class="op">)</span></span></code></pre></div>
+<p>Now, load the data.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># load data ---------------------------------------------------------------</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># preprocess --------------------------------------------------------------</span></span>
-<span><span class="va">std</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/caret/man/preProcess.html" class="external-link">preProcess</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">std</span>, <span class="va">Boston</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">std</span>, <span class="va">Boston</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<p>Next, we fit a neural network. As neural networks require random
-initial weights to begin learning, we use <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> for
-reproducibility.</p>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span></span></code></pre></div>
+<p>Next, we fit a neural network. We will fit a neural network on the
+respose variable, <code>medv</code>, using all covariates and with two
+hidden nodes. As neural networks require random initial weights to begin
+learning, we use <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> for reproducibility.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
-<span><span class="va">nn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nnet/man/nnet.html" class="external-link">nnet</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">y</span>, size <span class="op">=</span> <span class="fl">2</span>, trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span><span class="va">nn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/nnet/man/nnet.html" class="external-link">nnet</a></span><span class="op">(</span><span class="va">medv</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">Boston</span>, size <span class="op">=</span> <span class="fl">2</span>, trace <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>           linout <span class="op">=</span> <span class="cn">TRUE</span>, maxit <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
 <p>We can then create a <code>statnn</code> object</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">stnn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/statnn.html">statnn</a></span><span class="op">(</span><span class="va">nn</span>, X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">stnn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/statnn.html">statnn</a></span><span class="op">(</span><span class="va">nn</span>, X <span class="op">=</span> <span class="va">Boston</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">Boston</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> </span></code></pre></div>
 <p>A useful summary table can then be produced using the
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> function</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -171,7 +161,7 @@ Partial Covariate Effect (PCE) plots.</p>
 significance of each weight from the single-parameter Wald test.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotnn.html">plotnn</a></span><span class="op">(</span><span class="va">stnn</span><span class="op">)</span></span></code></pre></div>
-<p><img src="boston_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="boston_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
   </main>
 </div>
 

@@ -3,6 +3,14 @@
 #' Fits n_init tracks with different initial values and decides on best model
 #' based on information criteria.
 #'
+#' @rdname nn_fit
+#' @param ... arguments passed to or from other methods
+#' @return The best model from the different initialisations
+#' @export
+nn_fit <- function(...) UseMethod("nn_fit")
+
+
+#' @rdname nn_fit
 #' @param x Matrix of covariates
 #' @param y Vector of response
 #' @param q Number of hidden nodes
@@ -17,9 +25,8 @@
 #' @param pkg Package for fitting neural network. One of `nnet` (default) or
 #' `torch`
 #' @param ... additional argument for nnet
-#' @return The best model from the different initialisations
 #' @export
-nn_fit <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
+nn_fit.default <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
                    response = "continuous", unif = 3, maxit = 1000,
                    pkg = "nnet", ...) {
   
@@ -43,6 +50,40 @@ nn_fit <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
   }
   nn$x  <- x
   nn$y <- y
+  return(nn)
+}
+
+#' @rdname nn_fit
+#' @param formula An object of class \code{"\link{formula}"}: a two-sided object
+#' with response on the left hand side and the model variables on the right hand side.
+#' @param data  A data frame containing the variables in the model
+#' @param q Number of hidden nodes
+#' @param n_init Number of random initialisations (tracks)
+#' @param inf_crit Information criterion: `"BIC"` (default), `"AIC"` or
+#'  `"AICc"`
+#' @param lambda Ridge penalty
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @param unif Random initial values max value
+#' @param maxit Maximum number of iterations for nnet (default = 100)
+#' @param pkg Package for fitting neural network. One of `nnet` (default) or
+#' `torch`
+#' @param ... additional argument for nnet
+#' @return statnn object
+#' @export
+nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
+                           response = "continuous", unif = 3, maxit = 1000,
+                           pkg = "nnet", ...) {
+  
+  x <- model.matrix(formula, data = data)[, -1] 
+  
+  y <- as.matrix(model.extract(model.frame(formula, data = data), "response"),
+                 ncol = 1)
+  
+  nn <- nn_fit.default(x, y, q = q, n_init = n_init, inf_crit = inf_crit,
+                       lambda = lambda, response = response, unif = unif,
+                       maxit = maxit, ...)
+  
   return(nn)
 }
 

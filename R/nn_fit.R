@@ -113,16 +113,19 @@ nn_fit_nnet <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
       sigma2 <- RSS / n
       
       log_likelihood <- (-n / 2) * log(2 * pi * sigma2) - RSS / (2 * sigma2)
+      
+      k_ic <- k + 1 # number of params for IC calculation
     } else if (response == "binary") {
       log_likelihood <- -nn_model$value
+      k_ic <- k # number of params for IC calculation
     }
     
     inf_crit_vec[iter] <- ifelse(inf_crit == "AIC",
-                                 (2 * (k + 1) - 2 * log_likelihood),
+                                 (2 * (k_ic) - 2 * log_likelihood),
                                  ifelse(inf_crit == "BIC",
-                                        (log(n) * (k + 1) - 2 * log_likelihood),
+                                        (log(n) * (k_ic) - 2 * log_likelihood),
                                         ifelse(inf_crit == "AICc",
-                                               (2 * (k + 1) * (n / (n - (k + 1) - 1)) - 2 * log_likelihood),
+                                               (2 * (k_ic) * (n / (n - (k_ic) - 1)) - 2 * log_likelihood),
                                                NA)))
     converge[iter] <- nn_model$convergence
     nn[[iter]] <- nn_model
@@ -187,8 +190,10 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
   
   if (response == "continuous") {
     loss <- torch::nn_mse_loss()
+    k_ic <- k + 1 # number of params for IC calculation
   } else if (response == "binary") {
     loss <- torch::nn_bce_loss()
+    k_ic <- k # number of params for IC calculation
   } else {
     stop(sprintf(
       "Error: %s not recognised as task. Please choose regression or classification",
@@ -247,11 +252,11 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
                                  response = response)
     
     inf_crit_vec[iter] <- ifelse(inf_crit == "AIC",
-                                 (2 * (k + 1) - 2 * log_likelihood),
+                                 (2 * (k_ic) - 2 * log_likelihood),
                                  ifelse(inf_crit == "BIC",
-                                        (log(n) * (k + 1) - 2 * log_likelihood),
+                                        (log(n) * (k_ic) - 2 * log_likelihood),
                                         ifelse(inf_crit == "AICc",
-                                               (2 * (k + 1) * (n / (n - (k + 1) - 1)) - 2 * log_likelihood),
+                                               (2 * (k_ic) * (n / (n - (k_ic) - 1)) - 2 * log_likelihood),
                                                NA)))
     
     converge[iter] <- length(fitted$records$metrics$train) < maxit

@@ -63,7 +63,8 @@ class <code>statnn</code>.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotci</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span>  which <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">object</span><span class="op">$</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  which <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span><span class="op">:</span><span class="va">object</span><span class="op">$</span><span class="va">n_inputs</span><span class="op">)</span>,</span>
+<span>  which_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1L</span><span class="op">:</span><span class="va">object</span><span class="op">$</span><span class="va">n_nodes</span><span class="op">)</span>,</span>
 <span>  colour <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ask <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="fu">graphics</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="st">"mfcol"</span><span class="op">)</span><span class="op">)</span> <span class="op">&lt;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">which</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  caption <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">object</span><span class="op">$</span><span class="va">X</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">iter</span><span class="op">)</span> <span class="op">{</span></span>
@@ -86,6 +87,10 @@ class <code>statnn</code>.</p>
 
 <dt>which</dt>
 <dd><p>index of plots to be displayed.</p></dd>
+
+
+<dt>which_params</dt>
+<dd><p>index of weights to be displayed.</p></dd>
 
 
 <dt>colour</dt>

@@ -56,15 +56,17 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">statnn</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">statnn.nnet</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, B <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">statnn.default</span><span class="op">(</span><span class="va">object</span>, B <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">statnn.keras.engine.training.Model</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, <span class="va">y</span>, B <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">statnn.nnet</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, B <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">statnn.nn</span><span class="op">(</span><span class="va">object</span>, B <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">statnn.keras.engine.training.Model</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, <span class="va">y</span>, B <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">statnn.ANN</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, B <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">statnn.nn</span><span class="op">(</span><span class="va">object</span>, B <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">statnn.luz_module_fitted</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, <span class="va">y</span>, B <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">statnn.ANN</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, B <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">statnn.luz_module_fitted</span><span class="op">(</span><span class="va">object</span>, <span class="va">X</span>, <span class="va">y</span>, B <span class="op">=</span> <span class="fl">100</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,12 +79,12 @@
 <dd><p>nnet object</p></dd>
 
 
-<dt>X</dt>
-<dd><p>matrix of input data</p></dd>
-
-
 <dt>B</dt>
 <dd><p>number of bootstrap replicates</p></dd>
+
+
+<dt>X</dt>
+<dd><p>matrix of input data</p></dd>
 
 
 <dt>y</dt>
@@ -95,6 +97,9 @@
 
 <p>A list with information of the optimal model.</p><ul><li><p><code>statnn</code> - object of class statnn.</p></li>
 </ul><p>statnn object</p>
+
+
+<p>statnn object</p>
 
 
 <p>statnn object</p>

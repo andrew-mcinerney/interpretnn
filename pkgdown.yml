@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   boston: boston.html
-last_built: 2023-05-03T09:33Z
+last_built: 2023-05-08T09:47Z
 urls:
   reference: https://andrew-mcinerney.github.io/statnn/reference
   article: https://andrew-mcinerney.github.io/statnn/articles

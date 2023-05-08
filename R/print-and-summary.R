@@ -178,3 +178,22 @@ print.summary.statnn <- function(x, ...) {
   # )
   print(wts, quote = FALSE)
 }
+
+#' @export
+predict.statnn <- function(object, newdata) {
+  if (!inherits(object, "statnn")) 
+    warning("calling predict.lm(<fake-statnn-object>) ...")
+  
+  if (missing(newdata) || is.null(newdata)) {
+    pred <- nn_pred(object$X, object$weights, object$n_nodes, object$response)
+  } else {
+    
+    if (colnames(object$y) %in% colnames(newdata)) {
+      newdata <- newdata[, !(colnames(newdata) %in% colnames(object$y))]
+    }
+    
+    pred <- nn_pred(newdata, object$weights, object$n_nodes, object$response)
+  }
+  
+  return(pred)
+}

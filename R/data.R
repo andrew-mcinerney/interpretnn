@@ -1,4 +1,4 @@
-#' World Health Organization TB data
+#' Standardized Boston Housing Data
 #'
 #' A data set containing housing values in 506 suburbs of Boston.
 #'
@@ -20,7 +20,7 @@
 #'   \item{\code{medv}}{median value of owner-occupied homes in $1000s.}
 #' }
 #' @source
-#' This dataset was obtained from the ISLR2 library, which was orginally obtained and slightly modified from
+#' This dataset was is a standardized version of the Boston dataset obtained from the ISLR2 library, which was orginally obtained and slightly modified from
 #' the Boston dataset that is part of the MASS library. 
 #' References are available in the MASS library. 
 #' 

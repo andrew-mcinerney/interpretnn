@@ -3,7 +3,7 @@ print.statnn <- function(x, ...) {
   # cat("Call (nnet):\n")
   # print(x$call)
   cat("Call (statnn):\n")
-  print(x$cl)
+  print(x$call)
   cat("\n")
   cat("Model Architecture: ", x$n_inputs, "-",
       paste0(x$n_nodes, collapse = "-"), "-", "1", " network", sep = ""
@@ -142,7 +142,7 @@ print.summary.statnn <- function(x, ...) {
   # cat("Call (nnet):\n")
   # print(x$call)
   cat("Call (statnn):\n")
-  print(x$cl)
+  print(x$call)
   cat("\n")
   cat("Number of input nodes:", x$n_inputs, "\n")
   cat("Number of hidden nodes:", paste(x$n_nodes, collapse = ", "), "\n")

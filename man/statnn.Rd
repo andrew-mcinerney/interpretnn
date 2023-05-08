@@ -12,17 +12,17 @@
 \usage{
 statnn(...)
 
-statnn.default(object, B = 1000, ...)
+statnn.default(object, B = 100, ...)
 
-statnn.nnet(object, X, B = 1000, ...)
+statnn.nnet(object, X, B = 100, ...)
 
-statnn.keras.engine.training.Model(object, X, y, B = 1000, ...)
+statnn.keras.engine.training.Model(object, X, y, B = 100, ...)
 
-statnn.nn(object, B = 1000, ...)
+statnn.nn(object, B = 100, ...)
 
-statnn.ANN(object, X, B = 1000, ...)
+statnn.ANN(object, X, B = 100, ...)
 
-statnn.luz_module_fitted(object, X, y, B = 1000, ...)
+statnn.luz_module_fitted(object, X, y, B = 100, ...)
 }
 \arguments{
 \item{...}{arguments passed to or from other methods}

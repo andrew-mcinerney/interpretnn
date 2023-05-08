@@ -21,7 +21,7 @@ statnn <- function(...) UseMethod("statnn")
 #' @param ... arguments passed to or from other methods
 #' @return statnn object
 #' @export
-statnn.default <- function(object, B = 1000, ...) {
+statnn.default <- function(object, B = 100, ...) {
   
   stnn <- statnn(object$nn, X = object$X, y = object$y, B = B)
   
@@ -35,7 +35,7 @@ statnn.default <- function(object, B = 1000, ...) {
 #' @param ... arguments passed to or from other methods
 #' @return statnn object
 #' @export
-statnn.nnet <- function(object, X, B = 1000, ...) {
+statnn.nnet <- function(object, X, B = 100, ...) {
   if (class(object)[1] != "nnet" & class(object)[1] != "nnet.formula") {
     stop("Error: Argument must be of class nnet")
   }
@@ -46,7 +46,7 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
 
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
   
@@ -93,7 +93,7 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
 
   stnn$eff <- eff_matrix
 
-  stnn$cl <- match.call()
+  stnn$call <- match.call(expand.dots = TRUE)
 
   stnn$y <- object$fitted.values + object$residuals
   if (class(object)[1] == "nnet") {
@@ -132,7 +132,7 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
 #' @param ... arguments passed to or from other methods
 #' @return statnn object
 #' @export
-statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
+statnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) {
   if (class(object)[1] != "keras.engine.sequential.Sequential") {
     stop("Error: Argument object must be of class keras.engine.sequential.Sequential")
   }
@@ -157,7 +157,7 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
 
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
 
@@ -200,7 +200,7 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 1000, ...) {
 
   stnn$eff <- eff_matrix
 
-  stnn$cl <- match.call()
+  stnn$call <- match.call()
 
   stnn$y <- y
   
@@ -253,7 +253,7 @@ methods::setMethod("statnn", "keras.engine.training.Model",
 #' @param ... arguments passed to or from other methods
 #' @return statnn object
 #' @export
-statnn.nn <- function(object, B = 1000, ...) {
+statnn.nn <- function(object, B = 100, ...) {
   if (class(object)[1] != "nn") {
     stop("Error: Argument must be of class nn")
   }
@@ -266,7 +266,7 @@ statnn.nn <- function(object, B = 1000, ...) {
   
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
   
@@ -319,7 +319,7 @@ statnn.nn <- function(object, B = 1000, ...) {
   
   stnn$eff <- eff_matrix
   
-  stnn$cl <- match.call()
+  stnn$call <- match.call()
   
   stnn$y <- object$response
   
@@ -353,7 +353,7 @@ statnn.nn <- function(object, B = 1000, ...) {
 #' @param ... arguments passed to or from other methods
 #' @return statnn object
 #' @export
-statnn.ANN <- function(object, X, B = 1000, ...) {
+statnn.ANN <- function(object, X, B = 100, ...) {
   if (class(object)[1] != "ANN") {
     stop("Error: Argument must be of class ANN")
   }
@@ -364,7 +364,7 @@ statnn.ANN <- function(object, X, B = 1000, ...) {
   
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B"
   )
   
@@ -409,7 +409,7 @@ statnn.ANN <- function(object, X, B = 1000, ...) {
   
   stnn$eff <- eff_matrix
   
-  stnn$cl <- match.call()
+  stnn$call <- match.call()
   
   stnn$y <- object$response
   
@@ -435,7 +435,7 @@ statnn.ANN <- function(object, X, B = 1000, ...) {
 #' @param ... arguments passed to or from other methods
 #' @return statnn object
 #' @export
-statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
+statnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   if (class(object)[1] != "luz_module_fitted") {
     stop("Error: Argument object must be of class luz_module_fitted")
   }
@@ -453,7 +453,7 @@ statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
   
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "cl", "wald", "wald_sp", "X",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
   
@@ -513,7 +513,7 @@ statnn.luz_module_fitted <- function(object, X, y, B = 1000, ...) {
   
   stnn$eff <- eff_matrix
   
-  stnn$cl <- match.call()
+  stnn$call <- match.call()
   
   stnn$y <- y
   

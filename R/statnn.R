@@ -96,6 +96,11 @@ statnn.nnet <- function(object, X, B = 1000, ...) {
   stnn$cl <- match.call()
 
   stnn$y <- object$fitted.values + object$residuals
+  if (class(object)[1] == "nnet") {
+    colnames(stnn$y) <- as.character(object$call$y)
+  } else if (class(object)[1] == "nnet.formula") {
+    colnames(stnn$y) <- as.character(object$terms[[2]])
+  }
   
   stnn$response <- response
   

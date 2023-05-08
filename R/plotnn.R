@@ -48,7 +48,7 @@
 plotnn <-
   function (x, rep = NULL, x.entry = NULL, x.out = NULL, radius = 0.15,
             arrow.length = 0.2, intercept = FALSE, intercept.factor = 0.4,
-            information = TRUE, information.pos = 0.1, col.entry.synapse = "black",
+            information = FALSE, information.pos = 0.1, col.entry.synapse = "black",
             col.entry = "black", col.hidden = "black", col.hidden.synapse = "black",
             col.out = "black", col.out.synapse = "black", col.intercept = "black",
             col.sig.synapse = "black", col.insig.synapse = "lightgrey",

@@ -13,7 +13,7 @@ plotnn(
   arrow.length = 0.2,
   intercept = FALSE,
   intercept.factor = 0.4,
-  information = TRUE,
+  information = FALSE,
   information.pos = 0.1,
   col.entry.synapse = "black",
   col.entry = "black",

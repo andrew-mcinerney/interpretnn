@@ -101,7 +101,7 @@ nn_loglike <- function(object, X = NULL, y = NULL, lambda = 0,
     ))
   }
   
-  if (class(object)[1] == "nnet") {
+  if (class(object)[1] == "nnet" | class(object)[1] == "nnet.formula") {
     
     if (is.null(X)) {
       stop("Error: Argument X must not be NULL when class(object) == nnet")

@@ -31,6 +31,17 @@ stnn <- statnn(nn, X)
 summary(stnn)
 
 
+# nnet formula ------------------------------------------------------------
+
+nn <- nnet(y ~ ., data = data.frame(X, y), size = q, linout = TRUE,
+           trace = FALSE)
+
+
+# using statnn function
+
+stnn <- statnn(nn, X)
+summary(stnn)
+
 # keras -------------------------------------------------------------------
 
 model <- keras_model_sequential()

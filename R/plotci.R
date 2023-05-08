@@ -8,6 +8,7 @@
 #' @param object an object of class \code{statnnet}.
 #' @param alpha significane level.
 #' @param which index of plots to be displayed.
+#' @param which_params index of weights to be displayed.
 #' @param colour colour of confidence intervals.
 #' @param ask ask before displaying each plot.
 #' @param caption caption for each plot.
@@ -16,7 +17,8 @@
 #'
 #' @return plot of weights and their significance
 #' @export
-plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
+plotci <- function(object, alpha = 0.05, which = c(1L:object$n_inputs),
+                   which_params = c(1L:object$n_nodes),
                    colour = 1,
                    ask = prod(graphics::par("mfcol")) < length(which) &&
                      grDevices::dev.interactive(),
@@ -30,7 +32,9 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
                      }
                    ), ...) {
   
-  # add alpha argument to wald_sp function
+  if (length(which_params) < 2) {
+    stop("Error: which_params must be of length 2 or more.")
+  }
   
   sp_ci <- wald_single_parameter(object$X, object$y, object$weights,
                                  object$n_nodes, object$lambda,
@@ -68,6 +72,14 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
       
       ind_points <- matrix(match(plot_points, ind_vec), ncol = 2)
       
+      plot_points <- plot_points[
+        apply(ind_points, 1, function (x) all(x %in% which_params)), ,
+        drop = FALSE]
+      
+      ind_points <- ind_points[
+        apply(ind_points, 1, function (x) all(x %in% which_params)), , 
+        drop = FALSE]
+      
       xlabs <- paste0("w", ind_points[, 1])
       ylabs <- paste0("w", ind_points[, 2])
       
@@ -99,7 +111,7 @@ plotci <- function(object, alpha = 0.05, which = c(1L:ncol(object$X)),
                        xright =  sp_ci[plot_points[j, 1], 2], ytop = sp_ci[plot_points[j, 2], 2],
                        lty = "dashed", border = colour, ...)
         
-        grDevices::dev.flush()
+        # grDevices::dev.flush()
       }
     }
   }

@@ -7,7 +7,8 @@
 plotci(
   object,
   alpha = 0.05,
-  which = c(1L:ncol(object$X)),
+  which = c(1L:object$n_inputs),
+  which_params = c(1L:object$n_nodes),
   colour = 1,
   ask = prod(graphics::par("mfcol")) < length(which) && grDevices::dev.interactive(),
   caption = lapply(1:ncol(object$X), function(iter) {
@@ -23,6 +24,8 @@ plotci(
 \item{alpha}{significane level.}
 
 \item{which}{index of plots to be displayed.}
+
+\item{which_params}{index of weights to be displayed.}
 
 \item{colour}{colour of confidence intervals.}
 

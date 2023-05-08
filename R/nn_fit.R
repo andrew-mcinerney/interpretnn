@@ -3,7 +3,7 @@
 #' Fits n_init tracks with different initial values and decides on best model
 #' based on information criteria.
 #'
-#' @param X Matrix of covariates
+#' @param x Matrix of covariates
 #' @param y Vector of response
 #' @param q Number of hidden nodes
 #' @param n_init Number of random initialisations (tracks)
@@ -19,19 +19,19 @@
 #' @param ... additional argument for nnet
 #' @return The best model from the different initialisations
 #' @export
-nn_fit <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
+nn_fit <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
                    response = "continuous", unif = 3, maxit = 1000,
                    pkg = "nnet", ...) {
   
   if (pkg == "nnet") {
     
-    nn <- nn_fit_nnet(X = X, y = y, q = q, n_init = n_init, inf_crit = inf_crit,
+    nn <- nn_fit_nnet(x = x, y = y, q = q, n_init = n_init, inf_crit = inf_crit,
                       lambda = lambda, response = response, unif = unif,
                       maxit = maxit, ...)
     
   } else if (pkg == "torch") {
     
-    nn <- nn_fit_torch(X = X, y = y, q = q, n_init = n_init, inf_crit = inf_crit,
+    nn <- nn_fit_torch(x = x, y = y, q = q, n_init = n_init, inf_crit = inf_crit,
                        lambda = lambda, response = response, unif = unif,
                        maxit = maxit, ...)
     
@@ -41,7 +41,7 @@ nn_fit <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
       pkg
     ))
   }
-  nn$X  <- X
+  nn$x  <- x
   nn$y <- y
   return(nn)
 }
@@ -52,7 +52,7 @@ nn_fit <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
 #' Fits n_init tracks with different initial values and decides on best model
 #' based on information criteria.
 #'
-#' @param X Matrix of covariates
+#' @param x Matrix of covariates
 #' @param y Vector of response
 #' @param q Number of hidden nodes
 #' @param n_init Number of random initialisations (tracks)
@@ -66,13 +66,13 @@ nn_fit <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
 #' @param ... additional argument for nnet
 #' @return The best model from the different tracks
 #' @export
-nn_fit_nnet <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
+nn_fit_nnet <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
                         response = "continuous", unif = 3, maxit = 1000, ...) {
   # Function with fits n_init tracks of model and finds best
   
-  df <- data.frame(X, y)
-  n <- nrow(X)
-  p <- ncol(as.matrix(X)) # as.matrix() in case p = 1 (auto. becomes vector)
+  df <- data.frame(x, y)
+  n <- nrow(x)
+  p <- ncol(as.matrix(x)) # as.matrix() in case p = 1 (auto. becomes vector)
   
   k <- (p + 2) * q + 1
   
@@ -100,7 +100,7 @@ nn_fit_nnet <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
   }
   
   for (iter in 1:n_init) {
-    nn_model <- nnet::nnet(x = X, y = y, size = q, trace = FALSE,
+    nn_model <- nnet::nnet(x = x, y = y, size = q, trace = FALSE,
                            linout = linout, entropy = entropy,
                            Wts = weight_matrix_init[iter, ], maxit = maxit,
                            decay = lambda, ...
@@ -150,7 +150,7 @@ nn_fit_nnet <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
 #' Fits n_init tracks with different initial values and decides on best model
 #' based on information criteria.
 #'
-#' @param X Matrix of covariates
+#' @param x Matrix of covariates
 #' @param y Vector of response
 #' @param q Number of hidden nodes
 #' @param n_init Number of random initialisations (tracks)
@@ -166,14 +166,14 @@ nn_fit_nnet <- function(X, y, q, n_init, inf_crit = "BIC", lambda = 0,
 #' @param ... additional argument for nnet
 #' @return The best model from the different tracks
 #' @export
-nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
+nn_fit_torch <- function(x, y, q, n_init, inf_crit = "BIC",
                          response = "continuous", unif = 3, maxit = 1000,
                          lambda = 0, min_delta = 1.0e-8, patience = 10,
                          batch_size = 32, ...) {
   
-  df <- data.frame(X, y)
-  n <- nrow(X)
-  p <- ncol(as.matrix(X)) 
+  df <- data.frame(x, y)
+  n <- nrow(x)
+  p <- ncol(as.matrix(x)) 
   
   k <- (p + 2) * q + 1
   
@@ -236,7 +236,7 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
     
     fitted <- modnn %>%
       luz::fit(
-        data = list(as.matrix(X), y),
+        data = list(as.matrix(x), y),
         epochs = maxit,
         verbose = FALSE,
         callbacks = list(luz::luz_callback_early_stopping(monitor = "train_loss", 
@@ -248,7 +248,7 @@ nn_fit_torch <- function(X, y, q, n_init, inf_crit = "BIC",
     
     weight_matrix[iter, ] <- torch_to_nnet(fitted$model$parameters)
     
-    log_likelihood <- nn_loglike(fitted, X = X, y = y, lambda = lambda,
+    log_likelihood <- nn_loglike(fitted, X = x, y = y, lambda = lambda,
                                  response = response)
     
     inf_crit_vec[iter] <- ifelse(inf_crit == "AIC",

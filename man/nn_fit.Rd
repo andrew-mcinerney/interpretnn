@@ -5,7 +5,7 @@
 \title{Fits various tracks (different random starting values) and chooses best model}
 \usage{
 nn_fit(
-  X,
+  x,
   y,
   q,
   n_init,
@@ -19,7 +19,7 @@ nn_fit(
 )
 }
 \arguments{
-\item{X}{Matrix of covariates}
+\item{x}{Matrix of covariates}
 
 \item{y}{Vector of response}
 

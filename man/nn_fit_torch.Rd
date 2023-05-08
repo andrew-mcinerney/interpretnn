@@ -6,7 +6,7 @@
 using torch}
 \usage{
 nn_fit_torch(
-  X,
+  x,
   y,
   q,
   n_init,
@@ -22,7 +22,7 @@ nn_fit_torch(
 )
 }
 \arguments{
-\item{X}{Matrix of covariates}
+\item{x}{Matrix of covariates}
 
 \item{y}{Vector of response}
 

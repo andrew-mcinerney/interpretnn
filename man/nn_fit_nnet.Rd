@@ -6,7 +6,7 @@
 using nnet}
 \usage{
 nn_fit_nnet(
-  X,
+  x,
   y,
   q,
   n_init,
@@ -19,7 +19,7 @@ nn_fit_nnet(
 )
 }
 \arguments{
-\item{X}{Matrix of covariates}
+\item{x}{Matrix of covariates}
 
 \item{y}{Vector of response}
 

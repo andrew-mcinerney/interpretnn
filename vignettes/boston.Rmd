@@ -20,51 +20,38 @@ To begin, load the `statnn` package.
 library(statnn)
 ```
 
-There are three other packages that we will load.
-The first is the package we will use to fit the neural network.
+Also, load the package that we will use to fit the neural network.
 Our package works with a number of popular R packages for neural networks, and
 here we will use the `nnet` package.
-The second is the `ISLR2` package, which contains the Boston Housing data set.
-Finally, the third package, `caret`, will be used for some data 
-preprocessing.
+
 
 ```{r, message=FALSE, warning=FALSE}
 library(nnet)
-library(caret)
 ```
 
-We first load the data and do some preprocessing.
+Now, load the data.
 
 ```{r}
 # load data ---------------------------------------------------------------
 data(Boston)
-
-# preprocess --------------------------------------------------------------
-std <- preProcess(Boston)
-
-X <- predict(std, Boston)[, -ncol(Boston)]
-y <- predict(std, Boston)[, ncol(Boston)]
 ```
 
-```{r, echo = FALSE}
-std_y <- caret::preProcess(data.frame("medv" = Boston[, ncol(Boston)]))
-y <- as.matrix(predict(std_y, data.frame("medv" = Boston[, ncol(Boston)])))
-```
 
 Next, we fit a neural network.
+We will fit a neural network on the respose variable, `medv`, using all covariates and with two hidden nodes. 
 As neural networks require random initial weights to begin learning, we use
 `set.seed()` for reproducibility.
 
 ```{r}
 set.seed(100)
-nn <- nnet(X, y, size = 2, trace = FALSE,
+nn <- nnet(medv ~ ., data = Boston, size = 2, trace = FALSE,
            linout = TRUE, maxit = 1000)
 ```
 
 We can then create a `statnn` object
 
-```{r, cahce = TRUE}
-stnn <- statnn(nn, X = as.matrix(X))
+```{r stnn, cache = TRUE}
+stnn <- statnn(nn, X = Boston[, -ncol(Boston)]) 
 ```
 
 A useful summary table can then be produced using the `summary()` function

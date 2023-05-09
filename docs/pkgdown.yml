@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   boston: boston.html
   casi-poster: web-only/casi-poster.html
-last_built: 2023-05-09T12:50Z
+last_built: 2023-05-09T13:01Z
 urls:
   reference: https://andrew-mcinerney.github.io/statnn/reference
   article: https://andrew-mcinerney.github.io/statnn/articles

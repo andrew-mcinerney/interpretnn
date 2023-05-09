@@ -12,14 +12,14 @@
 
 Check out my poster for CASI 2023.
 
-You can find the GitHub repository
-[here](https://github.com/andrew-mcinerney/CASI2023).
-
-<!-- [![CASI Poster](man/figures/casi-poster.png)](https://andrew-mcinerney.github.io/statnn/articles/casi-poster.html) -->
+<!-- [![CASI Poster](man/figures/casi-poster.png)](https://andrew-mcinerney.github.io/statnn/articles/web-only/casi-poster.html) -->
 <center>
 <a href="https://andrew-mcinerney.github.io/statnn/articles/casi-poster.html">
 <img src="man/figures/casi-poster.png" style="width:300px"> </a>
 </center>
+
+You can find the GitHub repository for the poster
+[here](https://github.com/andrew-mcinerney/CASI2023).
 
 ## Installation
 

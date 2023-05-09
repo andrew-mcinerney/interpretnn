@@ -1,0 +1,6 @@
+---
+title: "CASI 2023 Poster"
+output: rmarkdown::html_document
+---
+
+<img src="casi-poster.png"/>

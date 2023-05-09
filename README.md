@@ -8,10 +8,18 @@
 [![R-CMD-check](https://github.com/andrew-mcinerney/statnn/workflows/R-CMD-check/badge.svg)](https://github.com/andrew-mcinerney/statnn/actions)
 <!-- badges: end -->
 
-## Notice
+## CASI 2023
 
-This package is currently in development. If you experience any issues,
-please get in touch.
+Check out my poster for CASI 2023.
+
+You can find the GitHub repository
+[here](https://github.com/andrew-mcinerney/CASI2023).
+
+<!-- [![CASI Poster](man/figures/casi-poster.png)](https://andrew-mcinerney.github.io/statnn/articles/casi-poster.html) -->
+<center>
+<a href="https://andrew-mcinerney.github.io/statnn/articles/casi-poster.html">
+<img src="man/figures/casi-poster.png" style="width:300px"> </a>
+</center>
 
 ## Installation
 
@@ -49,3 +57,8 @@ plot(stnn, conf_int = TRUE)
 
 More information about these functions and their arguments can be found
 in the documentation.
+
+## Notice
+
+This package is currently in development. If you experience any issues,
+please get in touch.

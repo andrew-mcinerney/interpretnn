@@ -27,7 +27,7 @@ Check out my poster for CASI 2023.
 
 <!-- [![CASI Poster](man/figures/casi-poster.png)](https://andrew-mcinerney.github.io/statnn/articles/web-only/casi-poster.html) -->
 
-<center><a href="https://andrew-mcinerney.github.io/statnn/articles/casi-poster.html">
+<center><a href="https://andrew-mcinerney.github.io/statnn/articles/web-only/casi-poster.html">
   <img src="man/figures/casi-poster.png" style="width:300px">
 </a></center>
 

@@ -14,10 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-To begin, load the `statnn` package.
+To begin, load the `interpretnn` package.
 
 ```{r setup}
-library(statnn)
+library(interpretnn)
 ```
 
 Also, load the package that we will use to fit the neural network.
@@ -48,16 +48,16 @@ nn <- nnet(medv ~ ., data = Boston, size = 2, trace = FALSE,
            linout = TRUE, maxit = 1000)
 ```
 
-We can then create a `statnn` object
+We can then create a `interpretnn` object
 
-```{r stnn, cache = TRUE}
-stnn <- statnn(nn, X = Boston[, -ncol(Boston)]) 
+```{r intnn, cache = TRUE}
+intnn <- interpretnn(nn, X = Boston[, -ncol(Boston)]) 
 ```
 
 A useful summary table can then be produced using the `summary()` function
 
 ```{r}
-summary(stnn)
+summary(intnn)
 ```
 
 This tells provides us with simple point estimates of the effects, and
@@ -67,7 +67,7 @@ We can visualise the covariate effects and their associated uncertainty using
 the `plot()` function, which creates Partial Covariate Effect (PCE) plots.
 
 <!-- ```{r, cache = TRUE} -->
-<!-- plot(stnn, conf_int = TRUE) -->
+<!-- plot(intnn, conf_int = TRUE) -->
 <!-- ``` -->
 
 There is also a `plotnn()` function that visualise the significance of each weight
@@ -75,6 +75,6 @@ from the single-parameter Wald test.
 
 
 ```{r}
-plotnn(stnn)
+plotnn(intnn)
 ```
 

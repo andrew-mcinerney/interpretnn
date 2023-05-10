@@ -69,7 +69,7 @@ nn_fit.default <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
 #' @param pkg Package for fitting neural network. One of `nnet` (default) or
 #' `torch`
 #' @param ... additional argument for nnet
-#' @return statnn object
+#' @return interpretnn object
 #' @export
 nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
                            response = "continuous", unif = 3, maxit = 1000,

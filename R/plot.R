@@ -1,5 +1,5 @@
 #' @export
-plot.statnn <-
+plot.interpretnn <-
   function(x, which = c(1L:ncol(x$X)), conf_int = FALSE, alpha = 0.05, B = x$B,
            method = c("deltamethod", "mlesim"),
            add_rug = TRUE,
@@ -16,8 +16,8 @@ plot.statnn <-
            sub.caption = NULL, main = "",
            ask = prod(graphics::par("mfcol")) < length(which) && grDevices::dev.interactive(), ...,
            label.pos = c(4, 2), cex.caption = 1, cex.oma.main = 1.25) {
-    if (!inherits(x, "statnn")) {
-      stop("use only with \"statnn\" objects")
+    if (!inherits(x, "interpretnn")) {
+      stop("use only with \"interpretnn\" objects")
     }
     
     if (!is.numeric(which) || any(which < 1) || any(which > ncol(x$X))) {

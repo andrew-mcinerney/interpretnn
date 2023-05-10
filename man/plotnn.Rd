@@ -37,7 +37,7 @@ plotnn(
 )
 }
 \arguments{
-\item{x}{an object of class \code{statnnet}}
+\item{x}{an object of class \code{interpretnnet}}
 
 \item{rep}{repetition of the neural network. If rep="best", the repetition
 with the smallest error will be plotted. If not stated all repetitions will
@@ -109,5 +109,5 @@ plot of weights and their significance
 }
 \description{
 \code{plotnn} It is designed for an inspection of the weights for objects of
-class \code{statnn}.
+class \code{interpretnn}.
 }

@@ -19,7 +19,7 @@ plotci(
 )
 }
 \arguments{
-\item{object}{an object of class \code{statnnet}.}
+\item{object}{an object of class \code{interpretnnet}.}
 
 \item{alpha}{significane level.}
 
@@ -42,5 +42,5 @@ plot of weights and their significance
 \description{
 \code{plotci} It is designed for an inspection of the confidence intervals
 for the weights for objects of
-class \code{statnn}.
+class \code{interpretnn}.
 }

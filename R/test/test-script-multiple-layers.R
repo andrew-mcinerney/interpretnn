@@ -23,9 +23,9 @@ nn_weights <- unlist(sapply(object$weights[[1]], as.vector))
 sum((nn_pred(X, nn_weights, q) - y)^2)
 
 
-stnn <- statnn(object)
+intnn <- interpretnn(object)
 
-summary(stnn)
+summary(intnn)
 
 covariate_eff <- function(X, W, q) {
   eff <- rep(NA, ncol(X))

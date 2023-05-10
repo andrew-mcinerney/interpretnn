@@ -1,10 +1,10 @@
 #' Plot neural network architecture 
 #'
 #' \code{plotnn} It is designed for an inspection of the weights for objects of
-#' class \code{statnn}.
+#' class \code{interpretnn}.
 #'
 #'
-#' @param x an object of class \code{statnnet}
+#' @param x an object of class \code{interpretnnet}
 #' @param rep repetition of the neural network. If rep="best", the repetition
 #' with the smallest error will be plotted. If not stated all repetitions will
 #' be plotted, each in a separate window.

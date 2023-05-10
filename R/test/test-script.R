@@ -25,10 +25,10 @@ y <- nnic::nn_pred(X, W, q) + rnorm(n)
 nn <- nnet(X, y, size = q, linout = TRUE, trace = FALSE)
 
 
-# using statnn function
+# using interpretnn function
 
-stnn <- statnn(nn, X)
-summary(stnn)
+intnn <- interpretnn(nn, X)
+summary(intnn)
 
 
 # nnet formula ------------------------------------------------------------
@@ -37,10 +37,10 @@ nn <- nnet(y ~ ., data = data.frame(X, y), size = q, linout = TRUE,
            trace = FALSE)
 
 
-# using statnn function
+# using interpretnn function
 
-stnn <- statnn(nn, X)
-summary(stnn)
+intnn <- interpretnn(nn, X)
+summary(intnn)
 
 # keras -------------------------------------------------------------------
 
@@ -82,10 +82,10 @@ W_keras <- c(
 sum((nn_pred(X, W_keras, q) - y)^2)
 
 
-# using statnn function
+# using interpretnn function
 
-stnn <- statnn(model, X, y)
-summary(stnn)
+intnn <- interpretnn(model, X, y)
+summary(intnn)
 
 # neuralnet ---------------------------------------------------------------
 
@@ -102,17 +102,17 @@ neural_weights <- c(as.vector(neural_model$weights[[1]][[1]]),
                     neural_model$weights[[1]][[2]])
 
 
-yhat <- statnn::nn_pred(X, neural_weights, q)
+yhat <- interpretnn::nn_pred(X, neural_weights, q)
 neural_model$net.result[[1]] - yhat
 
 sum((yhat - y)^2)
 
-# using statnn function
+# using interpretnn function
 
-stnn <- statnn(neural_model)
-summary(stnn)
+intnn <- interpretnn(neural_model)
+summary(intnn)
 
-plot(stnn)
+plot(intnn)
 
 
 # ANN2 --------------------------------------------------------------------
@@ -131,7 +131,7 @@ ann_weights <- c(as.vector(t(cbind(ann_model$Rcpp_ANN$getParams()[[2]][[1]],
 
 sum((y - predict(ann_model, newdata = X)[[1]])^2) / nrow(X)
 
-statnn::nn_pred(X, ann_weights, q) - predict(ann_model, newdata = X)[[1]]
+interpretnn::nn_pred(X, ann_weights, q) - predict(ann_model, newdata = X)[[1]]
 
 
 
@@ -237,5 +237,5 @@ W_torch <- c(
 
 sum((nn_pred(X, W_torch, q) - y)^2) / nrow(X)
 
-stnn <- statnn(fitted, X, y)
-summary(stnn, wald_single_par = TRUE)
+intnn <- interpretnn(fitted, X, y)
+summary(intnn, wald_single_par = TRUE)

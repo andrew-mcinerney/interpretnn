@@ -70,7 +70,7 @@ with response on the left hand side and the model variables on the right hand si
 \value{
 The best model from the different initialisations
 
-statnn object
+interpretnn object
 }
 \description{
 Fits n_init tracks with different initial values and decides on best model

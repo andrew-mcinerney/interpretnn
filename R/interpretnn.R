@@ -4,38 +4,38 @@
 #'
 #' @return A list with information of the optimal model.
 #' \itemize{
-#'   \item \code{statnn} - object of class statnn.
+#'   \item \code{interpretnn} - object of class interpretnn.
 #'   }
 #'
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn <- function(...) UseMethod("statnn")
+interpretnn <- function(...) UseMethod("interpretnn")
 
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param object object from nn_fit
 #' @param X matrix of input data 
 #' @param y response variable
 #' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn.default <- function(object, B = 100, ...) {
+interpretnn.default <- function(object, B = 100, ...) {
   
-  stnn <- statnn(object$nn, X = object$X, y = object$y, B = B)
+  stnn <- interpretnn(object$nn, X = object$X, y = object$y, B = B)
   
   return(stnn)
 }
 
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param object nnet object
 #' @param X matrix of input data 
 #' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn.nnet <- function(object, X, B = 100, ...) {
+interpretnn.nnet <- function(object, X, B = 100, ...) {
   if (class(object)[1] != "nnet" & class(object)[1] != "nnet.formula") {
     stop("Error: Argument must be of class nnet")
   }
@@ -118,21 +118,21 @@ statnn.nnet <- function(object, X, B = 100, ...) {
 
   stnn$B <- B
 
-  class(stnn) <- "statnn"
+  class(stnn) <- "interpretnn"
 
   return(stnn)
 }
 
 
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param object nnet object
 #' @param X matrix of input data 
 #' @param y response variable
 #' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) {
+interpretnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) {
   if (class(object)[1] != "keras.engine.sequential.Sequential") {
     stop("Error: Argument object must be of class keras.engine.sequential.Sequential")
   }
@@ -237,23 +237,23 @@ statnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) {
 
   stnn$B <- B
 
-  class(stnn) <- "statnn"
+  class(stnn) <- "interpretnn"
 
   return(stnn)
 }
 
 #' @export
-methods::setMethod("statnn", "keras.engine.training.Model",
-          statnn.keras.engine.training.Model)
+methods::setMethod("interpretnn", "keras.engine.training.Model",
+          interpretnn.keras.engine.training.Model)
 
 
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param object neuralnet object
 #' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn.nn <- function(object, B = 100, ...) {
+interpretnn.nn <- function(object, B = 100, ...) {
   if (class(object)[1] != "nn") {
     stop("Error: Argument must be of class nn")
   }
@@ -340,20 +340,20 @@ statnn.nn <- function(object, B = 100, ...) {
   
   stnn$B <- B
   
-  class(stnn) <- "statnn"
+  class(stnn) <- "interpretnn"
   
   return(stnn)
 }
 
 
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param object ANN object
 #' @param X matrix of input data 
 #' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn.ANN <- function(object, X, B = 100, ...) {
+interpretnn.ANN <- function(object, X, B = 100, ...) {
   if (class(object)[1] != "ANN") {
     stop("Error: Argument must be of class ANN")
   }
@@ -421,21 +421,21 @@ statnn.ANN <- function(object, X, B = 100, ...) {
   
   stnn$B <- B
   
-  class(stnn) <- "statnn"
+  class(stnn) <- "interpretnn"
   
   return(stnn)
 }
 
 
-#' @rdname statnn
+#' @rdname interpretnn
 #' @param object nnet object
 #' @param X matrix of input data 
 #' @param y response variable
 #' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
-#' @return statnn object
+#' @return interpretnn object
 #' @export
-statnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
+interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   if (class(object)[1] != "luz_module_fitted") {
     stop("Error: Argument object must be of class luz_module_fitted")
   }
@@ -534,7 +534,7 @@ statnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   
   stnn$B <- B
   
-  class(stnn) <- "statnn"
+  class(stnn) <- "interpretnn"
   
   return(stnn)
 }

@@ -1,5 +1,5 @@
-Package: statnn
-Title: Statistically-Based Neural Networks
+Package: interpretnn
+Title: Interpreting neural networks from a statistical perspective
 Version: 0.0.0.9000
 Authors@R: c(
     person("Andrew", "McInerney", , "andrew.mcinerney@ul.ie", role = c("aut", "cre"),
@@ -11,9 +11,9 @@ Description: Extends exisitng neural network packages in R to have more
     neural network inputs, covariate-effect plots with their associated
     uncertainty, and display interpretable summaries.
 License: GPL (>= 3) + file LICENSE
-URL: https://github.com/andrew-mcinerney/statnn,
-    https://andrew-mcinerney.github.io/statnn/
-BugReports: https://github.com/andrew-mcinerney/statnn/issues
+URL: https://github.com/andrew-mcinerney/interpretnn,
+    https://andrew-mcinerney.github.io/interpretnn/
+BugReports: https://github.com/andrew-mcinerney/interpretnn/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

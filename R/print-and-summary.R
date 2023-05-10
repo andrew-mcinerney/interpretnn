@@ -1,8 +1,8 @@
 #' @export
-print.statnn <- function(x, ...) {
+print.interpretnn <- function(x, ...) {
   # cat("Call (nnet):\n")
   # print(x$call)
-  cat("Call (statnn):\n")
+  cat("Call (interpretnn):\n")
   print(x$call)
   cat("\n")
   cat("Model Architecture: ", x$n_inputs, "-",
@@ -12,7 +12,7 @@ print.statnn <- function(x, ...) {
 }
 
 #' @export
-coef.statnn <- function(object, ...) {
+coef.interpretnn <- function(object, ...) {
   weights <- object$weights
   
   layer_sizes <- c(object$n_inputs, object$n_nodes, 1)
@@ -41,7 +41,7 @@ coef.statnn <- function(object, ...) {
 }
 
 #' @export
-summary.statnn <- function(object, wald_single_par = FALSE, ...) {
+summary.interpretnn <- function(object, wald_single_par = FALSE, ...) {
   
   n_nodes <- c(object$n_inputs, object$n_nodes, 1)
   
@@ -119,12 +119,12 @@ summary.statnn <- function(object, wald_single_par = FALSE, ...) {
     object$coefdf <- object$coefdf[, colnames(object$coefdf) != "Weights"]
   }
 
-  class(object) <- c("summary.statnn", class(object))
+  class(object) <- c("summary.interpretnn", class(object))
   return(object)
 }
 
 #' @export
-print.summary.statnn <- function(x, ...) {
+print.summary.interpretnn <- function(x, ...) {
   ## code to get wald in right place (may need editing later)
 
   fdf <- format(x$coefdf)
@@ -141,7 +141,7 @@ print.summary.statnn <- function(x, ...) {
 
   # cat("Call (nnet):\n")
   # print(x$call)
-  cat("Call (statnn):\n")
+  cat("Call (interpretnn):\n")
   print(x$call)
   cat("\n")
   cat("Number of input nodes:", x$n_inputs, "\n")
@@ -171,7 +171,7 @@ print.summary.statnn <- function(x, ...) {
     4 + max(nchar(sleg, "bytes") - nchar(sleg)))
   cat("\n")
   cat("Weights:\n")
-  wts <- format(round(coef.statnn(x), 2))
+  wts <- format(round(coef.interpretnn(x), 2))
   # lapply(
   #   split(wts, rep(1:(x$n_inputs + x$n_nodes + 2), diff(x$nconn))),
   #   function(x) print(x, quote = FALSE)
@@ -180,9 +180,9 @@ print.summary.statnn <- function(x, ...) {
 }
 
 #' @export
-predict.statnn <- function(object, newdata, ...) {
-  if (!inherits(object, "statnn")) 
-    warning("calling predict.lm(<fake-statnn-object>) ...")
+predict.interpretnn <- function(object, newdata, ...) {
+  if (!inherits(object, "interpretnn")) 
+    warning("calling predict.lm(<fake-interpretnn-object>) ...")
   
   if (missing(newdata) || is.null(newdata)) {
     pred <- nn_pred(object$X, object$weights, object$n_nodes, object$response)

@@ -2,10 +2,10 @@
 #'
 #' \code{plotci} It is designed for an inspection of the confidence intervals 
 #' for the weights for objects of
-#' class \code{statnn}.
+#' class \code{interpretnn}.
 #'
 #'
-#' @param object an object of class \code{statnnet}.
+#' @param object an object of class \code{interpretnnet}.
 #' @param alpha significane level.
 #' @param which index of plots to be displayed.
 #' @param which_params index of weights to be displayed.

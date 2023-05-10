@@ -247,6 +247,8 @@ methods::setMethod("interpretnn", "keras.engine.training.Model",
           interpretnn.keras.engine.training.Model)
 
 
+
+
 #' @rdname interpretnn
 #' @param object neuralnet object
 #' @param B number of bootstrap replicates

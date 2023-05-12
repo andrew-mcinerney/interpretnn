@@ -23,7 +23,7 @@ interpretnn <- function(...) UseMethod("interpretnn")
 #' @export
 interpretnn.default <- function(object, B = 100, ...) {
   
-  stnn <- interpretnn(object$nn, X = object$X, y = object$y, B = B)
+  stnn <- interpretnn(object$nn, X = object$x, y = object$y, B = B)
   
   return(stnn)
 }
@@ -39,11 +39,11 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
   if (class(object)[1] != "nnet" & class(object)[1] != "nnet.formula") {
     stop("Error: Argument must be of class nnet")
   }
-
+  
   if (is.null(colnames(X))) {
     colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
   }
-
+  
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
@@ -56,27 +56,27 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
   } else {
     response <- "continuous"
   }
-
+  
   stnn <- sapply(stnn_names, function(x) NULL)
-
+  
   stnn$weights <- object$wts
-
+  
   stnn$val <- object$value
-
+  
   stnn$n_inputs <- object$n[1]
-
+  
   stnn$n_nodes <- object$n[2]
-
+  
   stnn$n_layers <- 1
-
+  
   stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
-
+  
   stnn$n <- nrow(object$residuals)
-
+  
   stnn$loglike <- nn_loglike(object, X = X)
-
+  
   stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
-
+  
   eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
   eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
@@ -84,20 +84,25 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
     replicate(
       B,
       covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-        W = stnn$weights,
-        q = stnn$n_nodes
+                    W = stnn$weights,
+                    q = stnn$n_nodes
       )
     ),
     1, stats::sd
   )
-
+  
   stnn$eff <- eff_matrix
-
+  
   stnn$call <- match.call(expand.dots = TRUE)
-
+  
   stnn$y <- object$fitted.values + object$residuals
   if (class(object)[1] == "nnet") {
-    colnames(stnn$y) <- as.character(object$call$y)
+    if (length(object$call$y) == 1) {
+      colnames(stnn$y) <- as.character(object$call$y)
+    } else if (length(object$call$y) == 3) {
+      colnames(stnn$y) <- as.character(object$call$y)[3]
+    }
+    
   } else if (class(object)[1] == "nnet.formula") {
     colnames(stnn$y) <- as.character(object$terms[[2]])
   }
@@ -105,7 +110,7 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
   stnn$response <- response
   
   stnn$lambda <- object$decay
-
+  
   stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
                          lambda = stnn$lambda,
                          response = stnn$response)
@@ -113,13 +118,13 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
   stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
                                         lambda = stnn$lambda,
                                         response = stnn$response)
-
+  
   stnn$X <- X
-
+  
   stnn$B <- B
-
+  
   class(stnn) <- "interpretnn"
-
+  
   return(stnn)
 }
 

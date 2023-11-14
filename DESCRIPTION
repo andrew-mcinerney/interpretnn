@@ -31,7 +31,8 @@ Suggests:
     rmarkdown,
     keras,
     caret,
-    torch,
+    torch
+Enhances:
     luz
 VignetteBuilder: knitr
 Depends: 

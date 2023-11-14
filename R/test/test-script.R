@@ -133,7 +133,7 @@ sum((y - predict(ann_model, newdata = X)[[1]])^2) / nrow(X)
 
 interpretnn::nn_pred(X, ann_weights, q) - predict(ann_model, newdata = X)[[1]]
 
-
+intnn <- interpretnn(ann_model, X, y)
 
 # torch -------------------------------------------------------------------
 

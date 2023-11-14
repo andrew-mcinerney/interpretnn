@@ -360,7 +360,10 @@ interpretnn.nn <- function(object, B = 100, ...) {
 #' @param ... arguments passed to or from other methods
 #' @return interpretnn object
 #' @export
-interpretnn.ANN <- function(object, X, B = 100, ...) {
+interpretnn.ANN <- function(object, X, y, B = 100, ...) {
+  
+  # working for single hidden layer
+  
   if (class(object)[1] != "ANN") {
     stop("Error: Argument must be of class ANN")
   }
@@ -369,34 +372,43 @@ interpretnn.ANN <- function(object, X, B = 100, ...) {
     colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
   }
   
+  # extend for multi-class
+  if (object$Rcpp_ANN$getMeta()$regression) {
+    response <- "continuous"
+  } else {
+    response <- "binary"
+  }
+  
   stnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
-    "y", "B"
+    "y", "B", "response", "lambda"
   )
   
   stnn <- sapply(stnn_names, function(x) NULL)
   
-  nn_weights <- unlist(sapply(object$weights[[1]], as.vector))
+  nn_weights<- c(as.vector(t(cbind(object$Rcpp_ANN$getParams()[[2]][[1]],
+                                   object$Rcpp_ANN$getParams()[[1]][[1]]))),
+                 as.vector(t(cbind(object$Rcpp_ANN$getParams()[[2]][[2]],
+                                   object$Rcpp_ANN$getParams()[[1]][[2]]))))
   
   stnn$weights <- nn_weights
   
-  stnn$val <- object$result.matrix[1, ] * 2
+  stnn$val <- object$Rcpp_ANN$getTrainHistory()$train_loss[
+    length(object$Rcpp_ANN$getTrainHistory()$train_loss)]
   
-  stnn$n_inputs <- nrow(object$weights[[1]][[1]]) - 1
+  stnn$n_inputs <- object$Rcpp_ANN$getMeta()$num_nodes[1]
   
-  n_nodes <- sapply(object$weights[[1]], ncol)
-  
-  stnn$n_nodes <- n_nodes[-length(n_nodes)]
+  stnn$n_nodes <- object$Rcpp_ANN$getMeta()$num_nodes[-c(1, length(object$Rcpp_ANN$getMeta()$num_nodes))]
   
   stnn$n_layers <- length(stnn$n_nodes)
   
   stnn$n_param <- sum(c(stnn$n_inputs + 1, stnn$n_nodes + 1) * 
                         c(stnn$n_nodes, 1))
   
-  stnn$n <- nrow(object$response)
+  stnn$n <- nrow(y)
   
-  stnn$loglike <- nn_loglike(object)
+  stnn$loglike <- nn_loglike(object, X, y)
   
   stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
   
@@ -418,7 +430,12 @@ interpretnn.ANN <- function(object, X, B = 100, ...) {
   
   stnn$call <- match.call()
   
-  stnn$y <- object$response
+  stnn$y <- y
+  
+  stnn$response <- response
+    
+  stnn$lambda <- 0 # cannot find way to access L1 / L2 arguments from ANN object
+  
   
   stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
   
@@ -545,3 +562,120 @@ interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   
   return(stnn)
 }
+
+interpretnn.deepregression <- function(object, X, y, B = 100, ...) {
+  
+  # need to check and extend to binary
+  
+  if (class(object)[1] != "deepregression") {
+    stop("Error: Argument object must be of class deepregression")
+  }
+  
+  if (is.null(colnames(X))) {
+    colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
+  }
+  
+  if (is.null(y)) {
+    stop("Error: Argument y must not be NULL when class(object) == deepregression")
+  }
+  
+  keras_weights <- keras::get_weights(object$model)
+  
+  # NOTE: Will need to make more general for multiclass classification
+  if (object$init_params$family == "bernoulli_prob") {
+    response <- "binary"
+  } else if (object$init_params$family == "normal") {
+    response <- "continuous"
+  }
+  
+  
+  stnn_names <- c(
+    "weights", "val", "n_inputs", "n_nodes", "n_layers",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
+    "y", "B", "response", "lambda"
+  )
+  
+  stnn <- sapply(stnn_names, function(x) NULL)
+  
+  stnn$weights <- c(
+    as.vector(rbind(keras_weights[[2]], keras_weights[[1]])),
+    c(keras_weights[[4]], keras_weights[[3]])
+  )
+  
+  stnn$val <- sum((nn_pred(X, stnn$weights, ncol(keras_weights[[1]])) - y)^2)
+  
+  stnn$n_inputs <- object$model$layers[[1]]$input_shape[[1]][[2]]
+  
+  stnn$n_nodes <- object$model$layers[[4]]$input_shape[[2]]
+  
+  stnn$n_layers <- 1
+  
+  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  
+  stnn$n <- nrow(X)
+  
+  stnn$loglike <- nn_loglike(object$model, X = X, y = y)
+  
+  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  
+  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  colnames(eff_matrix) <- c("eff", "eff_se")
+  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 2] <- apply(
+    replicate(
+      B,
+      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+                    W = stnn$weights,
+                    q = stnn$n_nodes
+      )
+    ),
+    1, stats::sd
+  )
+  
+  stnn$eff <- eff_matrix
+  
+  stnn$call <- match.call()
+  
+  stnn$y <- y
+  
+  stnn$response <- response
+  
+  lambda_vec <- c()
+  
+  # need to find how to access penalties
+  
+  for (l in 2:(stnn$n_layers + 2)) {
+    
+    # lambda_vec <- c(lambda_vec, 
+    #                 object$get_config()$layers[[l]]$config$kernel_regularizer$config$l2)
+    # 
+    # lambda_vec <- c(lambda_vec, 
+    #                 object$get_config()$layers[[l]]$config$bias_regularizer$config$l2)
+  }
+  
+  
+  
+  stnn$lambda <- ifelse(is.null(lambda_vec), 0, 
+                        ifelse(all(lambda_vec == lambda_vec[1]) & 
+                                 (length(lambda_vec) == (stnn$n_layers + 1) * 2),
+                               lambda_vec[1],
+                               stop("Not all weight decay values are the same")))
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
+                         lambda = stnn$lambda,
+                         response = stnn$response)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
+                                        lambda = stnn$lambda,
+                                        response = stnn$response)
+  
+  stnn$X <- X
+  
+  stnn$B <- B
+  
+  class(stnn) <- "interpretnn"
+  
+  return(stnn)
+}
+
+

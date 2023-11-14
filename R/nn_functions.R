@@ -114,13 +114,16 @@ nn_loglike <- function(object, X = NULL, y = NULL, lambda = 0,
     y <- object$fitted.values + object$residuals
 
     
-  } else if (class(object)[1] == "keras.engine.sequential.Sequential") {
+  } else if (class(object)[1] == "keras.engine.sequential.Sequential" | 
+             class(object)[1] == "keras.engine.functional.Functional") {
     if (is.null(y)) {
-      stop("Error: Argument y must not be NULL when class(object) == keras.engine.sequential.Sequential")
+      stop("Error: Argument y must not be NULL when class(object) == keras.engine.sequential.Sequential or 
+           keras.engine.functional.Functional")
     }
 
     if (is.null(X)) {
-      stop("Error: Argument X must not be NULL when class(object) == keras.engine.sequential.Sequential")
+      stop("Error: Argument X must not be NULL when class(object) == keras.engine.sequential.Sequential or 
+           keras.engine.functional.Functional")
     }
 
     keras_weights <- keras::get_weights(object)
@@ -148,11 +151,11 @@ nn_loglike <- function(object, X = NULL, y = NULL, lambda = 0,
   
   } else if (class(object)[1] == "luz_module_fitted") {
     if (is.null(y)) {
-      stop("Error: Argument y must not be NULL when class(object) == keras.engine.sequential.Sequential")
+      stop("Error: Argument y must not be NULL when class(object) == luz_module_fitted")
     }
     
     if (is.null(X)) {
-      stop("Error: Argument X must not be NULL when class(object) == keras.engine.sequential.Sequential")
+      stop("Error: Argument X must not be NULL when class(object) == luz_module_fitted")
     }
     
     luz_weights <- object$model$parameters
@@ -165,6 +168,22 @@ nn_loglike <- function(object, X = NULL, y = NULL, lambda = 0,
     )
     
     q <- length(luz_weights$output.weight)
+    
+  } else if (class(object)[1] == "ANN") {
+    if (is.null(y)) {
+      stop("Error: Argument y must not be NULL when class(object) == ANN")
+    }
+    
+    if (is.null(X)) {
+      stop("Error: Argument X must not be NULL when class(object) == ANN")
+    }
+    
+    weights<- c(as.vector(t(cbind(object$Rcpp_ANN$getParams()[[2]][[1]],
+                                     object$Rcpp_ANN$getParams()[[1]][[1]]))),
+                   as.vector(t(cbind(object$Rcpp_ANN$getParams()[[2]][[2]],
+                                     object$Rcpp_ANN$getParams()[[1]][[2]]))))
+    
+    q <- object$Rcpp_ANN$getMeta()$num_nodes[-c(1, length(object$Rcpp_ANN$getMeta()$num_nodes))]
     
   }
   

@@ -20,7 +20,7 @@ interpretnn.keras.engine.training.Model(object, X, y, B = 100, ...)
 
 interpretnn.nn(object, B = 100, ...)
 
-interpretnn.ANN(object, X, B = 100, ...)
+interpretnn.ANN(object, X, y, B = 100, ...)
 
 interpretnn.luz_module_fitted(object, X, y, B = 100, ...)
 }

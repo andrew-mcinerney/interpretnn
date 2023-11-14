@@ -79,11 +79,11 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
   
   eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 1] <- covariate_eff_pce(X, stnn$weights, stnn$n_nodes)
   eff_matrix[, 2] <- apply(
     replicate(
       B,
-      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+      covariate_eff_pce(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
                     W = stnn$weights,
                     q = stnn$n_nodes
       )
@@ -196,7 +196,7 @@ interpretnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) 
   eff_matrix[, 2] <- apply(
     replicate(
       B,
-      covariate_eff(W = stnn$weights,
+      covariate_eff_pce(W = stnn$weights,
         X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
         q = stnn$n_nodes,
         response = response
@@ -314,11 +314,11 @@ interpretnn.nn <- function(object, B = 100, ...) {
   
   eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 1] <- covariate_eff_pce(X, stnn$weights, stnn$n_nodes)
   eff_matrix[, 2] <- apply(
     replicate(
       B,
-      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+      covariate_eff_pce(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
                     W = stnn$weights,
                     q = stnn$n_nodes
       )
@@ -416,11 +416,11 @@ interpretnn.ANN <- function(object, X, y, B = 100, ...) {
   
   eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 1] <- covariate_eff_pce(X, stnn$weights, stnn$n_nodes)
   eff_matrix[, 2] <- apply(
     replicate(
       B,
-      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+      covariate_eff_pce(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
                     W = stnn$weights,
                     q = stnn$n_nodes
       )
@@ -525,11 +525,11 @@ interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   
   eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 1] <- covariate_eff_pce(X, stnn$weights, stnn$n_nodes)
   eff_matrix[, 2] <- apply(
     replicate(
       B,
-      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+      covariate_eff_pce(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
                     W = stnn$weights,
                     q = stnn$n_nodes
       )
@@ -622,11 +622,11 @@ interpretnn.deepregression <- function(object, X, y, B = 100, ...) {
   
   eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff(X, stnn$weights, stnn$n_nodes)
+  eff_matrix[, 1] <- covariate_eff_pce(X, stnn$weights, stnn$n_nodes)
   eff_matrix[, 2] <- apply(
     replicate(
       B,
-      covariate_eff(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+      covariate_eff_pce(X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
                     W = stnn$weights,
                     q = stnn$n_nodes
       )

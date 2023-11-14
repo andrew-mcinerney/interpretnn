@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   boston-example: boston-example.html
   casi-poster: web-only/casi-poster.html
-last_built: 2023-11-14T14:49Z
+last_built: 2023-11-14T16:42Z
 urls:
   reference: https://andrew-mcinerney.github.io/interpretnn/reference
   article: https://andrew-mcinerney.github.io/interpretnn/articles

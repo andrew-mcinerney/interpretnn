@@ -648,7 +648,7 @@ interpretnn.selectnn <- function(object, B = 100, ...) {
   
   stnn$call <- match.call(expand.dots = TRUE)
   
-  stnn$y <- object$y
+  stnn$y <- as.matrix(object$y)
   
   colnames(stnn$y) <- as.character(object$call$y)
   

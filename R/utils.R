@@ -39,6 +39,30 @@ covariate_eff <- function(X, W, q, response = "continuous") {
   return(eff)
 }
 
+#' Average PCE value for all columns in X
+#'
+#'
+#' @param W Weight vector
+#' @param X Data
+#' @param q Number of hidden units
+#' @param x_r x-axis range
+#' @param len number of breaks for x-axis
+#' @param d difference value
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @return Effect for each input
+#' @export
+covariate_eff_pce <- function(W, X, q, x_r = c(-3, 3), len = 301, d = "sd",
+                              response = "continuous") {
+  eff <- rep(NA, ncol(X))
+  for (col in 1:ncol(X)) {
+    eff[col] <- mean(pce(W, X, q, col, x_r = x_r, len = len, d = d,
+                         response = response))
+  }
+  names(eff) <- colnames(X)
+  return(eff)
+}
+
 
 #' Perform m.l.e. simulation for a function FUN to calculate associated uncertainty
 #'

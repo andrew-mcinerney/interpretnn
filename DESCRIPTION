@@ -18,21 +18,21 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports: 
-    keras,
     MASS,
     methods,
     nnet,
     numDeriv,
-    torch,
-    luz,
     magrittr,
-    caret,
     car,
     rlang,
     R6
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    keras,
+    torch,
+    caret,
+    luz
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

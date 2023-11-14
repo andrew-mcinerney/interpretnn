@@ -8,6 +8,7 @@
 \alias{interpretnn.nn}
 \alias{interpretnn.ANN}
 \alias{interpretnn.luz_module_fitted}
+\alias{interpretnn.selectnn}
 \title{Statistically-Based Neural Networks}
 \usage{
 interpretnn(...)
@@ -23,11 +24,13 @@ interpretnn.nn(object, B = 100, ...)
 interpretnn.ANN(object, X, y, B = 100, ...)
 
 interpretnn.luz_module_fitted(object, X, y, B = 100, ...)
+
+interpretnn.selectnn(object, B = 100, ...)
 }
 \arguments{
 \item{...}{arguments passed to or from other methods}
 
-\item{object}{nnet object}
+\item{object}{selectnn object}
 
 \item{B}{number of bootstrap replicates}
 
@@ -40,6 +43,8 @@ A list with information of the optimal model.
 \itemize{
 \item \code{interpretnn} - object of class interpretnn.
 }
+
+interpretnn object
 
 interpretnn object
 

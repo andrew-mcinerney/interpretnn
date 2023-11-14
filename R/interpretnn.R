@@ -460,7 +460,7 @@ interpretnn.ANN <- function(object, X, y, B = 100, ...) {
 
 
 #' @rdname interpretnn
-#' @param object nnet object
+#' @param object luz_module_fitted object
 #' @param X matrix of input data 
 #' @param y response variable
 #' @param B number of bootstrap replicates
@@ -555,6 +555,106 @@ interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   
   stnn$lambda <-  ifelse(is.null(object$ctx$opt_hparams$weight_decay), 0,
                          object$ctx$opt_hparams$weight_decay)
+  
+  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
+                         lambda = stnn$lambda,
+                         response = stnn$response)
+  
+  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
+                                        lambda = stnn$lambda,
+                                        response = stnn$response)
+  
+  stnn$X <- X
+  
+  stnn$B <- B
+  
+  class(stnn) <- "interpretnn"
+  
+  return(stnn)
+}
+
+
+#' @rdname interpretnn
+#' @param object selectnn object
+#' @param B number of bootstrap replicates
+#' @param ... arguments passed to or from other methods
+#' @return interpretnn object
+#' @export
+interpretnn.selectnn <- function(object, B = 100, ...) {
+  if (class(object)[1] != "selectnn") {
+    stop("Error: Argument must be of class selectnn")
+  }
+  
+  X <- object$X
+  
+  if (is.null(colnames(X))) {
+    colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
+  }
+  
+  stnn_names <- c(
+    "weights", "val", "n_inputs", "n_nodes", "n_layers",
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
+    "y", "B", "response", "lambda"
+  )
+  
+  # NOTE: Will need to make more general for multiclass classification
+  if (object$task == "regression") {
+    response <- "continuous"
+  } else {
+    response <- "binary"
+  }
+  
+  stnn <- sapply(stnn_names, function(x) NULL)
+  
+  stnn$weights <- object$W_opt
+  
+  stnn$val <- object$value
+  
+  stnn$n_inputs <- object$p
+  
+  stnn$n_nodes <- object$q
+  
+  stnn$n_layers <- 1
+  
+  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  
+  stnn$n <- nrow(object$X)
+  
+  nn_temp <- nnet::nnet(X, object$y, size = stnn$n_nodes,
+                        linout = response == "continuous", trace = FALSE,
+                        Wts = stnn$weights, maxit = 0)
+  
+  stnn$loglike <- nn_loglike(nn_temp, X = X)
+  
+  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  
+  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  colnames(eff_matrix) <- c("eff", "eff_se")
+  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
+                                       response = response)
+  eff_matrix[, 2] <- apply(
+    replicate(
+      B,
+      covariate_eff_pce(W = stnn$weights,
+                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
+                        q = stnn$n_nodes,
+                        response = response
+      )
+    ),
+    1, stats::sd
+  )
+  
+  stnn$eff <- eff_matrix
+  
+  stnn$call <- match.call(expand.dots = TRUE)
+  
+  stnn$y <- object$y
+  
+  colnames(stnn$y) <- as.character(object$call$y)
+  
+  stnn$response <- response
+  
+  stnn$lambda <- if (is.null(object$call$decay)) 0 else object$call$decay
   
   stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
                          lambda = stnn$lambda,

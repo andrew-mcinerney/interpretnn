@@ -25,19 +25,7 @@
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/Boston.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/VC.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/covariate_eff.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/covariate_eff_pce.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/delta_method.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/hessian.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/index.html</loc>
@@ -46,19 +34,10 @@
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/interpretnn.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/lr_test.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/mlesim.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_fit.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_fit_nnet.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_fit_torch.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_loglike.html</loc>
@@ -68,9 +47,6 @@
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_pred.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nnet_to_torch.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/pce.html</loc>
@@ -85,18 +61,6 @@
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/plotnn.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/sigmoid.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/statnn-methods.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/torch_to_nnet.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/wald_single_parameter.html</loc>
-  </url>
-  <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/wald_test.html</loc>
   </url>
 </urlset>

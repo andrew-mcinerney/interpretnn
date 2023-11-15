@@ -281,14 +281,14 @@ nnet_to_torch <- function(nnet_w, p, q) {
   return(torch_w)
 }
 
-#' print_callback
-#' @noRd 
-print_callback <- luz::luz_callback(
-  name = "print_callback",
-  initialize = function(iter) {
-    self$iter <- iter
-  },
-  on_fit_end = function(iter) {
-    cat("Iteration ", self$iter, "Done \n")
-  }
-)
+#' #' print_callback
+#' #' @noRd 
+#' print_callback <- luz::luz_callback(
+#'   name = "print_callback",
+#'   initialize = function(iter) {
+#'     self$iter <- iter
+#'   },
+#'   on_fit_end = function(iter) {
+#'     cat("Iteration ", self$iter, "Done \n")
+#'   }
+#' )

@@ -3,7 +3,7 @@
 #'
 #' @param x Input
 #' @return Sigmoid function
-#' @export
+#' @noRd 
 sigmoid <- function(x) 1 / (1 + exp(-x))
 
 
@@ -16,7 +16,7 @@ sigmoid <- function(x) 1 / (1 + exp(-x))
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
 #' @return Effect for each input
-#' @export
+#' @noRd 
 covariate_eff <- function(X, W, q, response = "continuous") {
   eff <- rep(NA, ncol(X))
   for (col in 1:ncol(X)) {
@@ -82,7 +82,7 @@ covariate_eff_pce <- function(W, X, q, x_r = c(-3, 3), len = 301, d = "sd",
 #'  `"binary"`
 #' @param ... additional arguments to FUN
 #' @return Effect for each input
-#' @export
+#' @noRd 
 mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
                    len = 301, lambda = 0, response = "continuous", ...) {
   
@@ -121,7 +121,7 @@ mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
 #'  `"binary"`
 #' @param ... additional arguments to FUN
 #' @return Effect for each input
-#' @export
+#' @noRd 
 delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
                          len = 301, lambda = 0, response = "continuous", ...) {
   
@@ -160,7 +160,7 @@ delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
 #' @return Hessian matrix
-#' @export
+#' @noRd 
 VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
   
   if (response == "continuous") {
@@ -214,7 +214,7 @@ VC <- function(W, X, y, q, lambda = 0, response = "continuous") {
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
 #' @return Hessian matrix 
-#' @export
+#' @noRd 
 hessian <- function(W, X, y, q, lambda = 0, response = "continuous") {
   
   if (response == "continuous") {
@@ -243,7 +243,7 @@ hessian <- function(W, X, y, q, lambda = 0, response = "continuous") {
 #'
 #' @param torch_w weights in torch format
 #' @return weights in nnet format
-#' @export
+#' @noRd 
 torch_to_nnet <- function(torch_w) {
   nnet_w <- c(
     as.vector(t(cbind(as.matrix(torch_w$hidden.bias),
@@ -262,7 +262,7 @@ torch_to_nnet <- function(torch_w) {
 #' @param p number of inputs
 #' @param q number of hidden nodes
 #' @return weights in torch format
-#' @export
+#' @noRd 
 nnet_to_torch <- function(nnet_w, p, q) {
   hidden_b_ind <- sapply(1:q, function(x) (x - 1) * (p + 1) + 1)
   hidden_w_ind <- c(1:((p + 1) * q))[-hidden_b_ind]
@@ -281,6 +281,8 @@ nnet_to_torch <- function(nnet_w, p, q) {
   return(torch_w)
 }
 
+#' print_callback
+#' @noRd 
 print_callback <- luz::luz_callback(
   name = "print_callback",
   initialize = function(iter) {

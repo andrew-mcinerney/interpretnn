@@ -10,7 +10,7 @@
 #'  `"binary"`
 #' @param alpha significance level for confidence interval
 #' @return Wald hypothesis test for each input
-#' @export
+#' @noRd 
 wald_test <- function(X, y, W, q, lambda = 0, response = "continuous",
                       alpha = 0.05) {
   p <- ncol(X)
@@ -65,7 +65,7 @@ wald_test <- function(X, y, W, q, lambda = 0, response = "continuous",
 #' @param maxit Maximum number of iterations for nnet
 #' @return Wald hypothesis test for each input
 #' @param ... additional arguments to nnet
-#' @export
+#' @noRd 
 lr_test <- function(X, y, W, q, n_init = 1, unif = 3, maxit = 1000, ...) {
   n <- nrow(X)
   p <- ncol(X)
@@ -128,7 +128,7 @@ lr_test <- function(X, y, W, q, n_init = 1, unif = 3, maxit = 1000, ...) {
 #'  `"binary"`
 #' @param alpha Significance level for confidence interval
 #' @return Wald hypothesis test for each weight
-#' @export
+#' @noRd 
 wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuous", 
                                    alpha = 0.05){
   p <- ncol(X)

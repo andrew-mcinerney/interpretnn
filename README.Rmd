@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/andrew-mcinerney/interpretnn/workflows/R-CMD-check/badge.svg)](https://github.com/andrew-mcinerney/interpretnn/actions)
+[![R-CMD-check](https://github.com/andrew-mcinerney/interpretnn/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/andrew-mcinerney/interpretnn/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 

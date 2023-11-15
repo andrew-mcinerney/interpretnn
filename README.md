@@ -8,20 +8,13 @@
 [![R-CMD-check](https://github.com/andrew-mcinerney/interpretnn/workflows/R-CMD-check/badge.svg)](https://github.com/andrew-mcinerney/interpretnn/actions)
 <!-- badges: end -->
 
-## CASI 2023
-
-Check out my poster for CASI 2023.
-
-<!-- [![CASI Poster](man/figures/casi-poster.png)](https://andrew-mcinerney.github.io/interpretnn/articles/web-only/casi-poster.html) -->
-<center>
-<a href="https://andrew-mcinerney.github.io/interpretnn/articles/web-only/casi-poster.html">
-<img src="man/figures/casi-poster.png" style="width:300px"> </a>
-</center>
-
-You can find the GitHub repository for the poster
-[here](https://github.com/andrew-mcinerney/CASI2023).
-
 ## Installation
+
+You can install the current version of interpretnn from CRAN with:
+
+``` r
+install.packages("interpretnn")
+```
 
 You can install the development version of interpretnn from
 [GitHub](https://github.com/) with:

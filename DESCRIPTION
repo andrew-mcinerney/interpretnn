@@ -1,15 +1,18 @@
 Package: interpretnn
-Title: Interpreting neural networks from a statistical perspective
+Title: Interpreting Neural Networks From a Statistical Perspective
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Andrew", "McInerney", , "andrew.mcinerney@ul.ie", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-2348-2159")),
+    person("Andrew", "McInerney", , "andrew.mcinerney@ul.ie", role = c("aut",
+    "cre", "cph"), comment = c(ORCID = "0000-0002-2348-2159")),
     person("Kevin", "Burke", , "kevin.burke@ul.ie", role = "aut")
   )
 Description: Extends exisitng neural network packages in R to have more
     statistically-based outputs. Allows for the calcualtions of p-values for
     neural network inputs, covariate-effect plots with their associated
-    uncertainty, and display interpretable summaries.
+    uncertainty, and display interpretable summaries. See McInerney and Burke
+    (2023) "Feedforward neural networks as statistical models: Improving
+    interpretability through uncertainty quantification" for more details.
+    <arXiv:2311.08139>.
 License: GPL (>= 3) + file LICENSE
 URL: https://github.com/andrew-mcinerney/interpretnn,
     https://andrew-mcinerney.github.io/interpretnn/

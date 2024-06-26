@@ -70,6 +70,17 @@ with response on the left hand side and the model variables on the right hand si
 \value{
 The best model from the different initialisations
 
+A list with estimates and estimated standard errors.
+\itemize{
+\item \code{W_opt} - vector of optimal weights.
+\item \code{value} - value of best information criterion.
+\item \code{inf_crit_vec} - value of information criterion for each
+initialisation.
+\item \code{convergence} - value of network convergence for each
+initialisation (1 if maxmium iterations reached, 0 if not).
+\item \code{nn} - optimal \code{nnet} object.
+}
+
 interpretnn object
 }
 \description{

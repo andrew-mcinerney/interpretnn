@@ -25,6 +25,17 @@ nn_fit <- function(...) UseMethod("nn_fit")
 #' @param pkg Package for fitting neural network. One of `nnet` (default) or
 #' `torch`
 #' @param ... additional argument for nnet
+#' 
+#' @return A list with estimates and estimated standard errors.
+#' \itemize{
+#'   \item \code{W_opt} - vector of optimal weights.
+#'   \item \code{value} - value of best information criterion.
+#'   \item \code{inf_crit_vec} - value of information criterion for each
+#'    initialisation.
+#'   \item \code{convergence} - value of network convergence for each 
+#'   initialisation (1 if maxmium iterations reached, 0 if not).
+#'   \item \code{nn} - optimal \code{nnet} object.
+#'   }
 #' @export
 nn_fit.default <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
                    response = "continuous", unif = 3, maxit = 1000,
@@ -106,7 +117,7 @@ nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 
 #' @param maxit maximum number of iterations for nnet (default = 100)
 #' @param ... additional argument for nnet
 #' @return The best model from the different tracks
-#' @export
+#' @noRd 
 nn_fit_nnet <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
                         response = "continuous", unif = 3, maxit = 1000, ...) {
   # Function with fits n_init tracks of model and finds best

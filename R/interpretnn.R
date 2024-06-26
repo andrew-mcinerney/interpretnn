@@ -23,9 +23,9 @@ interpretnn <- function(...) UseMethod("interpretnn")
 #' @export
 interpretnn.default <- function(object, B = 100, ...) {
   
-  stnn <- interpretnn(object$nn, X = object$x, y = object$y, B = B)
+  intnn <- interpretnn(object$nn, X = object$x, y = object$y, B = B)
   
-  return(stnn)
+  return(intnn)
 }
 
 #' @rdname interpretnn
@@ -44,7 +44,7 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
     colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
   }
   
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
@@ -57,77 +57,71 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
     response <- "continuous"
   }
   
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
   
-  stnn$weights <- object$wts
+  intnn$weights <- object$wts
   
-  stnn$val <- object$value
+  intnn$val <- object$value
   
-  stnn$n_inputs <- object$n[1]
+  intnn$n_inputs <- object$n[1]
   
-  stnn$n_nodes <- object$n[2]
+  intnn$n_nodes <- object$n[2]
   
-  stnn$n_layers <- 1
+  intnn$n_layers <- 1
   
-  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  intnn$n_param <- (intnn$n_inputs + 2) * intnn$n_nodes + 1
   
-  stnn$n <- nrow(object$residuals)
+  intnn$n <- nrow(object$residuals)
   
-  stnn$loglike <- nn_loglike(object, X = X)
+  intnn$loglike <- nn_loglike(object, X = X)
   
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-                        q = stnn$n_nodes,
-                        response = response
-      )
-    ),
-    1, stats::sd
-  )
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$eff <- eff_matrix
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
   
-  stnn$call <- match.call(expand.dots = TRUE)
+  intnn$eff <- eff_matrix
   
-  stnn$y <- object$fitted.values + object$residuals
+  intnn$call <- match.call(expand.dots = TRUE)
+  
+  intnn$y <- object$fitted.values + object$residuals
   if (class(object)[1] == "nnet") {
     if (length(object$call$y) == 1) {
-      colnames(stnn$y) <- as.character(object$call$y)
+      colnames(intnn$y) <- as.character(object$call$y)
     } else if (length(object$call$y) == 3) {
-      colnames(stnn$y) <- as.character(object$call$y)[3]
+      colnames(intnn$y) <- as.character(object$call$y)[3]
     }
     
   } else if (class(object)[1] == "nnet.formula") {
-    colnames(stnn$y) <- as.character(object$terms[[2]])
+    colnames(intnn$y) <- as.character(object$terms[[2]])
   }
   
-  stnn$response <- response
+  intnn$response <- response
   
-  stnn$lambda <- object$decay
+  intnn$lambda <- object$decay
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
-                         lambda = stnn$lambda,
-                         response = stnn$response)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
+                         lambda = intnn$lambda,
+                         response = intnn$response)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
-                                        lambda = stnn$lambda,
-                                        response = stnn$response)
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
+                                        lambda = intnn$lambda,
+                                        response = intnn$response)
   
-  stnn$X <- X
+  intnn$X <- X
   
-  stnn$B <- B
+  intnn$B <- B
   
-  class(stnn) <- "interpretnn"
+  class(intnn) <- "interpretnn"
   
-  return(stnn)
+  return(intnn)
 }
 
 
@@ -162,62 +156,56 @@ interpretnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) 
   }
 
 
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
 
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
 
-  stnn$weights <- c(
+  intnn$weights <- c(
     as.vector(rbind(keras_weights[[2]], keras_weights[[1]])),
     c(keras_weights[[4]], keras_weights[[3]])
   )
 
-  stnn$val <- sum((nn_pred(X, stnn$weights, ncol(keras_weights[[1]])) - y)^2)
+  intnn$val <- sum((nn_pred(X, intnn$weights, ncol(keras_weights[[1]])) - y)^2)
 
-  stnn$n_inputs <- object$layers[[1]]$input_shape[[2]]
+  intnn$n_inputs <- object$layers[[1]]$input_shape[[2]]
 
-  stnn$n_nodes <- object$layers[[2]]$input_shape[[2]]
+  intnn$n_nodes <- object$layers[[2]]$input_shape[[2]]
 
-  stnn$n_layers <- 1
+  intnn$n_layers <- 1
 
-  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  intnn$n_param <- (intnn$n_inputs + 2) * intnn$n_nodes + 1
 
-  stnn$n <- nrow(X)
+  intnn$n <- nrow(X)
 
-  stnn$loglike <- nn_loglike(object, X = X, y = y)
+  intnn$loglike <- nn_loglike(object, X = X, y = y)
 
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
 
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-        q = stnn$n_nodes,
-        response = response
-      )
-    ),
-    1, stats::sd
-  )
-
-  stnn$eff <- eff_matrix
-
-  stnn$call <- match.call()
-
-  stnn$y <- y
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$response <- response
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
+
+  intnn$eff <- eff_matrix
+
+  intnn$call <- match.call()
+
+  intnn$y <- y
+  
+  intnn$response <- response
   
   lambda_vec <- c()
   
-  for (l in 2:(stnn$n_layers + 2)) {
+  for (l in 2:(intnn$n_layers + 2)) {
     
     lambda_vec <- c(lambda_vec, 
                     object$get_config()$layers[[l]]$config$kernel_regularizer$config$l2)
@@ -228,27 +216,27 @@ interpretnn.keras.engine.training.Model <- function(object, X, y, B = 100, ...) 
   
   
   
-  stnn$lambda <- ifelse(is.null(lambda_vec), 0, 
+  intnn$lambda <- ifelse(is.null(lambda_vec), 0, 
                         ifelse(all(lambda_vec == lambda_vec[1]) & 
-                                 (length(lambda_vec) == (stnn$n_layers + 1) * 2),
+                                 (length(lambda_vec) == (intnn$n_layers + 1) * 2),
                                lambda_vec[1],
                                stop("Not all weight decay values are the same")))
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
-                         lambda = stnn$lambda,
-                         response = stnn$response)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
+                         lambda = intnn$lambda,
+                         response = intnn$response)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
-                                        lambda = stnn$lambda,
-                                        response = stnn$response)
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
+                                        lambda = intnn$lambda,
+                                        response = intnn$response)
 
-  stnn$X <- X
+  intnn$X <- X
 
-  stnn$B <- B
+  intnn$B <- B
 
-  class(stnn) <- "interpretnn"
+  class(intnn) <- "interpretnn"
 
-  return(stnn)
+  return(intnn)
 }
 
 #' @export
@@ -275,7 +263,7 @@ interpretnn.nn <- function(object, B = 100, ...) {
     colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
   }
   
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
@@ -288,74 +276,68 @@ interpretnn.nn <- function(object, B = 100, ...) {
     response <- "continuous"
   }
   
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
   
   nn_weights <- unlist(sapply(object$weights[[1]], as.vector))
   
-  stnn$weights <- nn_weights
+  intnn$weights <- nn_weights
   
-  stnn$val <- object$result.matrix[1, ] * 2
+  intnn$val <- object$result.matrix[1, ] * 2
   
-  stnn$n_inputs <- nrow(object$weights[[1]][[1]]) - 1
+  intnn$n_inputs <- nrow(object$weights[[1]][[1]]) - 1
   
   n_nodes <- sapply(object$weights[[1]], ncol)
   
-  stnn$n_nodes <- n_nodes[-length(n_nodes)]
+  intnn$n_nodes <- n_nodes[-length(n_nodes)]
   
-  stnn$n_layers <- length(stnn$n_nodes)
+  intnn$n_layers <- length(intnn$n_nodes)
   
-  stnn$n_param <- sum(c(stnn$n_inputs + 1, stnn$n_nodes + 1) * 
-                        c(stnn$n_nodes, 1))
+  intnn$n_param <- sum(c(intnn$n_inputs + 1, intnn$n_nodes + 1) * 
+                        c(intnn$n_nodes, 1))
   
-  stnn$n <- nrow(object$response)
+  intnn$n <- nrow(object$response)
   
   
-  stnn$loglike <- nn_loglike(object)
+  intnn$loglike <- nn_loglike(object)
   
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-                        q = stnn$n_nodes,
-                        response = response
-      )
-    ),
-    1, stats::sd
-  )
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$eff <- eff_matrix
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
   
-  stnn$call <- match.call()
+  intnn$eff <- eff_matrix
   
-  stnn$y <- object$response
+  intnn$call <- match.call()
   
-  stnn$response <- response
+  intnn$y <- object$response
+  
+  intnn$response <- response
   
   # neuralnet does not support weight decay unless you provide your own err.fct 
-  stnn$lambda <- 0 
+  intnn$lambda <- 0 
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
-                         lambda = stnn$lambda,
-                         response = stnn$response)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
+                         lambda = intnn$lambda,
+                         response = intnn$response)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
-                                        lambda = stnn$lambda,
-                                        response = stnn$response)
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
+                                        lambda = intnn$lambda,
+                                        response = intnn$response)
   
-  stnn$X <- X
+  intnn$X <- X
   
-  stnn$B <- B
+  intnn$B <- B
   
-  class(stnn) <- "interpretnn"
+  class(intnn) <- "interpretnn"
   
-  return(stnn)
+  return(intnn)
 }
 
 
@@ -385,77 +367,71 @@ interpretnn.ANN <- function(object, X, y, B = 100, ...) {
     response <- "binary"
   }
   
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
   
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
   
   nn_weights<- c(as.vector(t(cbind(object$Rcpp_ANN$getParams()[[2]][[1]],
                                    object$Rcpp_ANN$getParams()[[1]][[1]]))),
                  as.vector(t(cbind(object$Rcpp_ANN$getParams()[[2]][[2]],
                                    object$Rcpp_ANN$getParams()[[1]][[2]]))))
   
-  stnn$weights <- nn_weights
+  intnn$weights <- nn_weights
   
-  stnn$val <- object$Rcpp_ANN$getTrainHistory()$train_loss[
+  intnn$val <- object$Rcpp_ANN$getTrainHistory()$train_loss[
     length(object$Rcpp_ANN$getTrainHistory()$train_loss)]
   
-  stnn$n_inputs <- object$Rcpp_ANN$getMeta()$num_nodes[1]
+  intnn$n_inputs <- object$Rcpp_ANN$getMeta()$num_nodes[1]
   
-  stnn$n_nodes <- object$Rcpp_ANN$getMeta()$num_nodes[-c(1, length(object$Rcpp_ANN$getMeta()$num_nodes))]
+  intnn$n_nodes <- object$Rcpp_ANN$getMeta()$num_nodes[-c(1, length(object$Rcpp_ANN$getMeta()$num_nodes))]
   
-  stnn$n_layers <- length(stnn$n_nodes)
+  intnn$n_layers <- length(intnn$n_nodes)
   
-  stnn$n_param <- sum(c(stnn$n_inputs + 1, stnn$n_nodes + 1) * 
-                        c(stnn$n_nodes, 1))
+  intnn$n_param <- sum(c(intnn$n_inputs + 1, intnn$n_nodes + 1) * 
+                        c(intnn$n_nodes, 1))
   
-  stnn$n <- nrow(y)
+  intnn$n <- nrow(y)
   
-  stnn$loglike <- nn_loglike(object, X, y)
+  intnn$loglike <- nn_loglike(object, X, y)
   
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-                        q = stnn$n_nodes,
-                        response = response
-      )
-    ),
-    1, stats::sd
-  )
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$eff <- eff_matrix
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
   
-  stnn$call <- match.call()
+  intnn$eff <- eff_matrix
   
-  stnn$y <- y
+  intnn$call <- match.call()
   
-  stnn$response <- response
+  intnn$y <- y
+  
+  intnn$response <- response
     
-  stnn$lambda <- 0 # cannot find way to access L1 / L2 arguments from ANN object
+  intnn$lambda <- 0 # cannot find way to access L1 / L2 arguments from ANN object
   
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes)
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes)
   
-  stnn$X <- X
+  intnn$X <- X
   
-  stnn$B <- B
+  intnn$B <- B
   
-  class(stnn) <- "interpretnn"
+  class(intnn) <- "interpretnn"
   
-  return(stnn)
+  return(intnn)
 }
 
 
@@ -483,7 +459,7 @@ interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   weights <- object$model$parameters
   
   
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
@@ -497,9 +473,9 @@ interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
     response <- "continuous"
   }
   
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
   
-  stnn$weights <- c(
+  intnn$weights <- c(
     as.vector(t(cbind(as.matrix(weights$hidden.bias),
                       as.matrix(weights$hidden.weight)))),
     cbind(as.matrix(weights$output.bias),
@@ -507,70 +483,64 @@ interpretnn.luz_module_fitted <- function(object, X, y, B = 100, ...) {
   )
   
   
-  stnn$n_inputs <- ncol(weights$hidden.weight)
+  intnn$n_inputs <- ncol(weights$hidden.weight)
   
-  stnn$n_nodes <- length(weights$output.weight)
+  intnn$n_nodes <- length(weights$output.weight)
   
-  stnn$n_layers <- 1
+  intnn$n_layers <- 1
   
-  stnn$n_param <- sum(c(stnn$n_inputs + 1, stnn$n_nodes + 1) * 
-                        c(stnn$n_nodes, 1))
+  intnn$n_param <- sum(c(intnn$n_inputs + 1, intnn$n_nodes + 1) * 
+                        c(intnn$n_nodes, 1))
   
-  stnn$n <- nrow(X)
+  intnn$n <- nrow(X)
   
   if (response == "binary") {
-    stnn$val <- - (y * log(nn_pred(X, stnn$weights, stnn$n_nodes, response = "binary")) +
-      (1 - y) * log(1 - nn_pred(X, stnn$weights, stnn$n_nodes, response = "binary")))
+    intnn$val <- - (y * log(nn_pred(X, intnn$weights, intnn$n_nodes, response = "binary")) +
+      (1 - y) * log(1 - nn_pred(X, intnn$weights, intnn$n_nodes, response = "binary")))
   } else {
-    stnn$val <- sum((nn_pred(X, stnn$weights, stnn$n_nodes) - y)^2)
+    intnn$val <- sum((nn_pred(X, intnn$weights, intnn$n_nodes) - y)^2)
   }
   
-  stnn$loglike <- nn_loglike(object, X = X, y = y)
+  intnn$loglike <- nn_loglike(object, X = X, y = y)
   
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-                        q = stnn$n_nodes,
-                        response = response
-      )
-    ),
-    1, stats::sd
-  )
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$eff <- eff_matrix
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
   
-  stnn$call <- match.call()
+  intnn$eff <- eff_matrix
   
-  stnn$y <- y
+  intnn$call <- match.call()
   
-  stnn$response <- response
+  intnn$y <- y
   
-  stnn$lambda <-  ifelse(is.null(object$ctx$opt_hparams$weight_decay), 0,
+  intnn$response <- response
+  
+  intnn$lambda <-  ifelse(is.null(object$ctx$opt_hparams$weight_decay), 0,
                          object$ctx$opt_hparams$weight_decay)
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
-                         lambda = stnn$lambda,
-                         response = stnn$response)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
+                         lambda = intnn$lambda,
+                         response = intnn$response)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
-                                        lambda = stnn$lambda,
-                                        response = stnn$response)
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
+                                        lambda = intnn$lambda,
+                                        response = intnn$response)
   
-  stnn$X <- X
+  intnn$X <- X
   
-  stnn$B <- B
+  intnn$B <- B
   
-  class(stnn) <- "interpretnn"
+  class(intnn) <- "interpretnn"
   
-  return(stnn)
+  return(intnn)
 }
 
 
@@ -591,7 +561,7 @@ interpretnn.selectnn <- function(object, B = 100, ...) {
     colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
   }
   
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
@@ -604,73 +574,67 @@ interpretnn.selectnn <- function(object, B = 100, ...) {
     response <- "binary"
   }
   
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
   
-  stnn$weights <- object$W_opt
+  intnn$weights <- object$W_opt
   
-  stnn$val <- object$value
+  intnn$val <- object$value
   
-  stnn$n_inputs <- object$p
+  intnn$n_inputs <- object$p
   
-  stnn$n_nodes <- object$q
+  intnn$n_nodes <- object$q
   
-  stnn$n_layers <- 1
+  intnn$n_layers <- 1
   
-  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  intnn$n_param <- (intnn$n_inputs + 2) * intnn$n_nodes + 1
   
-  stnn$n <- nrow(object$X)
+  intnn$n <- nrow(object$X)
   
-  nn_temp <- nnet::nnet(X, object$y, size = stnn$n_nodes,
+  nn_temp <- nnet::nnet(X, object$y, size = intnn$n_nodes,
                         linout = response == "continuous", trace = FALSE,
-                        Wts = stnn$weights, maxit = 0)
+                        Wts = intnn$weights, maxit = 0)
   
-  stnn$loglike <- nn_loglike(nn_temp, X = X)
+  intnn$loglike <- nn_loglike(nn_temp, X = X)
   
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-                        q = stnn$n_nodes,
-                        response = response
-      )
-    ),
-    1, stats::sd
-  )
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$eff <- eff_matrix
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
   
-  stnn$call <- match.call(expand.dots = TRUE)
+  intnn$eff <- eff_matrix
   
-  stnn$y <- as.matrix(object$y)
+  intnn$call <- match.call(expand.dots = TRUE)
   
-  colnames(stnn$y) <- as.character(object$call$y)
+  intnn$y <- as.matrix(object$y)
   
-  stnn$response <- response
+  colnames(intnn$y) <- as.character(object$call$y)
   
-  stnn$lambda <- if (is.null(object$call$decay)) 0 else object$call$decay
+  intnn$response <- response
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
-                         lambda = stnn$lambda,
-                         response = stnn$response)
+  intnn$lambda <- if (is.null(object$call$decay)) 0 else object$call$decay
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
-                                        lambda = stnn$lambda,
-                                        response = stnn$response)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
+                         lambda = intnn$lambda,
+                         response = intnn$response)
   
-  stnn$X <- X
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
+                                        lambda = intnn$lambda,
+                                        response = intnn$response)
   
-  stnn$B <- B
+  intnn$X <- X
   
-  class(stnn) <- "interpretnn"
+  intnn$B <- B
   
-  return(stnn)
+  class(intnn) <- "interpretnn"
+  
+  return(intnn)
 }
 
 interpretnn.deepregression <- function(object, X, y, B = 100, ...) {
@@ -699,64 +663,58 @@ interpretnn.deepregression <- function(object, X, y, B = 100, ...) {
   }
   
   
-  stnn_names <- c(
+  intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
     "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
     "y", "B", "response", "lambda"
   )
   
-  stnn <- sapply(stnn_names, function(x) NULL)
+  intnn <- sapply(intnn_names, function(x) NULL)
   
-  stnn$weights <- c(
+  intnn$weights <- c(
     as.vector(rbind(keras_weights[[2]], keras_weights[[1]])),
     c(keras_weights[[4]], keras_weights[[3]])
   )
   
-  stnn$val <- sum((nn_pred(X, stnn$weights, ncol(keras_weights[[1]])) - y)^2)
+  intnn$val <- sum((nn_pred(X, intnn$weights, ncol(keras_weights[[1]])) - y)^2)
   
-  stnn$n_inputs <- object$model$layers[[1]]$input_shape[[1]][[2]]
+  intnn$n_inputs <- object$model$layers[[1]]$input_shape[[1]][[2]]
   
-  stnn$n_nodes <- object$model$layers[[4]]$input_shape[[2]]
+  intnn$n_nodes <- object$model$layers[[4]]$input_shape[[2]]
   
-  stnn$n_layers <- 1
+  intnn$n_layers <- 1
   
-  stnn$n_param <- (stnn$n_inputs + 2) * stnn$n_nodes + 1
+  intnn$n_param <- (intnn$n_inputs + 2) * intnn$n_nodes + 1
   
-  stnn$n <- nrow(X)
+  intnn$n <- nrow(X)
   
-  stnn$loglike <- nn_loglike(object$model, X = X, y = y)
+  intnn$loglike <- nn_loglike(object$model, X = X, y = y)
   
-  stnn$BIC <- (-2 * stnn$loglike) + (stnn$n_param * log(stnn$n))
+  intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = stnn$n_inputs, ncol = 2)
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
   colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- covariate_eff_pce(stnn$weights, X, stnn$n_nodes,
-                                       response = response)
-  eff_matrix[, 2] <- apply(
-    replicate(
-      B,
-      covariate_eff_pce(W = stnn$weights,
-                        X = X[sample(stnn$n, size = stnn$n, replace = TRUE), ],
-                        q = stnn$n_nodes,
-                        response = response
-      )
-    ),
-    1, stats::sd
-  )
+  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
+    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
+                      response = response))
   
-  stnn$eff <- eff_matrix
+  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
+    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
+                             alpha = alpha, lambda = lambda, response = response))
   
-  stnn$call <- match.call()
+  intnn$eff <- eff_matrix
   
-  stnn$y <- y
+  intnn$call <- match.call()
   
-  stnn$response <- response
+  intnn$y <- y
+  
+  intnn$response <- response
   
   lambda_vec <- c()
   
   # need to find how to access penalties
   
-  for (l in 2:(stnn$n_layers + 2)) {
+  for (l in 2:(intnn$n_layers + 2)) {
     
     # lambda_vec <- c(lambda_vec, 
     #                 object$get_config()$layers[[l]]$config$kernel_regularizer$config$l2)
@@ -767,27 +725,27 @@ interpretnn.deepregression <- function(object, X, y, B = 100, ...) {
   
   
   
-  stnn$lambda <- ifelse(is.null(lambda_vec), 0, 
+  intnn$lambda <- ifelse(is.null(lambda_vec), 0, 
                         ifelse(all(lambda_vec == lambda_vec[1]) & 
-                                 (length(lambda_vec) == (stnn$n_layers + 1) * 2),
+                                 (length(lambda_vec) == (intnn$n_layers + 1) * 2),
                                lambda_vec[1],
                                stop("Not all weight decay values are the same")))
   
-  stnn$wald <- wald_test(X, stnn$y, stnn$weights, stnn$n_nodes, 
-                         lambda = stnn$lambda,
-                         response = stnn$response)
+  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
+                         lambda = intnn$lambda,
+                         response = intnn$response)
   
-  stnn$wald_sp <- wald_single_parameter(X, stnn$y, stnn$weights, stnn$n_nodes,
-                                        lambda = stnn$lambda,
-                                        response = stnn$response)
+  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
+                                        lambda = intnn$lambda,
+                                        response = intnn$response)
   
-  stnn$X <- X
+  intnn$X <- X
   
-  stnn$B <- B
+  intnn$B <- B
   
-  class(stnn) <- "interpretnn"
+  class(intnn) <- "interpretnn"
   
-  return(stnn)
+  return(intnn)
 }
 
 

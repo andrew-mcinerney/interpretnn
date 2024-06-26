@@ -45,22 +45,86 @@ covariate_eff <- function(X, W, q, response = "continuous") {
 #' @param W Weight vector
 #' @param X Data
 #' @param q Number of hidden units
-#' @param x_r x-axis range
-#' @param len number of breaks for x-axis
+#' @param ind Column index
 #' @param d difference value
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
 #' @return Effect for each input
-#' @export
-covariate_eff_pce <- function(W, X, q, x_r = c(-3, 3), len = 301, d = "sd",
-                              response = "continuous") {
-  eff <- rep(NA, ncol(X))
-  for (col in 1:ncol(X)) {
-    eff[col] <- mean(pce(W, X, q, col, x_r = x_r, len = len, d = d,
-                         response = response))
+#' @noRd 
+covariate_eff_pce <- function(W, X, q, ind, d = "sd", response = "continuous") {
+  
+  X_new <- X
+  
+  if (all(levels(factor(X[, ind])) %in% c(0, 1)) &
+      length(levels(factor(X[, ind]))) == 2) {
+    
+    X_new[, ind] <- 0
+    pred_low <- nn_pred(X_new, W, q, response = response)
+    
+    X_new[, ind] <- 1
+    pred_high <- nn_pred(X_new, W, q, response = response)
+    
+    eff <- mean(pred_high - pred_low)
+    
+  } else {
+    
+    d_m <- matrix(0, ncol = ncol(X_new), nrow = nrow(X_new))
+    
+    if(d == "sd") {
+      d_m[, ind] <- stats::sd(X_new[, ind])
+    } else {
+      d_m[, ind] <- d
+    }
+    
+    x <- X_new[, ind]
+    
+    eff <- rep(NA, nrow(X_new))
+    
+    for (i in 1:length(x)) {
+      X_new[, ind] <- x[i]
+      eff[i] <- mean(nn_pred(X_new + d_m, W, q, response = response) -
+                       nn_pred(X_new, W, q, response = response))
+    }
   }
-  names(eff) <- colnames(X)
-  return(eff)
+  
+  average_pce <- mean(eff)
+  
+  return(average_pce)
+}
+
+#' Delta Method for average PCE effect
+#'
+#'
+#' @param W Weight vector
+#' @param X Data
+#' @param y Response
+#' @param q Number of hidden units
+#' @param ind Column index
+#' @param alpha significance level
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @return Effect for each input
+#' @noRd 
+pce_average_delta_method <- function(W, X, y, q, ind, alpha = 0.05,
+                                     lambda = 0, response = "continuous", ...) {
+  
+  vc <- VC(W, X, y, q, lambda = lambda, response = response)
+  
+  gradient <- numDeriv::jacobian(
+    func = covariate_eff_pce,
+    x = W,
+    X = X,
+    q = q,
+    ind = ind,
+    ...
+  )
+  
+  var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
+  
+  se <- sqrt(diag(var_est))
+  
+  return(se)
 }
 
 
@@ -111,40 +175,34 @@ mlesim <- function(W, X, y, q, ind, FUN, B = 1000, alpha = 0.05, x_r = c(-3, 3),
 #' @param X Data
 #' @param y Response
 #' @param q Number of hidden units
-#' @param ind index of column to plot
 #' @param FUN function for delta method
 #' @param alpha significance level
-#' @param x_r x-axis range
-#' @param len number of breaks for x-axis
 #' @param lambda Ridge penalty. Default is 0.
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
 #' @param ... additional arguments to FUN
 #' @return Effect for each input
 #' @noRd 
-delta_method <- function(W, X, y, q, ind, FUN, alpha = 0.05, x_r = c(-3, 3),
-                         len = 301, lambda = 0, response = "continuous", ...) {
+delta_method <- function(W, X, y, q, FUN, alpha = 0.05,
+                         lambda = 0, response = "continuous", ...) {
   
   vc <- VC(W, X, y, q, lambda = lambda, response = response)
-
+  
   gradient <- numDeriv::jacobian(
     func = FUN,
     x = W,
     X = X,
     q = q,
-    ind = ind,
-    x_r = x_r,
-    len = len,
     ...
   )
-
+  
   var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
-
-  pred <- FUN(W = W, X = X, q = q, ind =ind, x_r = x_r, len = len, ...)
-
+  
+  pred <- FUN(W = W, X = X, q = q, ...)
+  
   upper <- pred + stats::qnorm(1 - alpha / 2) * sqrt(diag(var_est))
   lower <- pred + stats::qnorm(alpha / 2) * sqrt(diag(var_est))
-
+  
   return(list("upper" = upper, "lower" = lower))
 }
 

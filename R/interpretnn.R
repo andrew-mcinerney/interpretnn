@@ -22,7 +22,7 @@ interpretnn <- function(...) UseMethod("interpretnn")
 #' @export
 interpretnn.default <- function(object,  ...) {
   
-  intnn <- interpretnn(object$nn, X = object$x, y = object$y, B = B)
+  intnn <- interpretnn(object$nn, X = object$x, y = object$y, ...)
   
   return(intnn)
 }

@@ -13,9 +13,9 @@
 \usage{
 interpretnn(...)
 
-interpretnn.default(object, B = 100, ...)
+interpretnn.default(object, ...)
 
-interpretnn.nnet(object, X, B = 100, ...)
+interpretnn.nnet(object, X, ...)
 
 interpretnn.keras.engine.training.Model(object, X, y, B = 100, ...)
 
@@ -32,11 +32,11 @@ interpretnn.selectnn(object, B = 100, ...)
 
 \item{object}{selectnn object}
 
-\item{B}{number of bootstrap replicates}
-
 \item{X}{matrix of input data}
 
 \item{y}{response variable}
+
+\item{B}{number of bootstrap replicates}
 }
 \value{
 A list with information of the optimal model.

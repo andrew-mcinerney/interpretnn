@@ -4,7 +4,7 @@
 \alias{pce}
 \title{Partial covariate effect}
 \usage{
-pce(W, X, q, ind, x_r = c(-3, 3), len = 301, d = "sd", response = "continuous")
+pce(W, X, q, ind, x_r = c(-3, 3), len = 101, d = "sd", response = "continuous")
 }
 \arguments{
 \item{W}{Weight vector}

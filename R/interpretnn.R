@@ -17,11 +17,10 @@ interpretnn <- function(...) UseMethod("interpretnn")
 #' @param object object from nn_fit
 #' @param X matrix of input data 
 #' @param y response variable
-#' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
 #' @return interpretnn object
 #' @export
-interpretnn.default <- function(object, B = 100, ...) {
+interpretnn.default <- function(object,  ...) {
   
   intnn <- interpretnn(object$nn, X = object$x, y = object$y, B = B)
   
@@ -31,11 +30,10 @@ interpretnn.default <- function(object, B = 100, ...) {
 #' @rdname interpretnn
 #' @param object nnet object
 #' @param X matrix of input data 
-#' @param B number of bootstrap replicates
 #' @param ... arguments passed to or from other methods
 #' @return interpretnn object
 #' @export
-interpretnn.nnet <- function(object, X, B = 100, ...) {
+interpretnn.nnet <- function(object, X, ...) {
   if (class(object)[1] != "nnet" & class(object)[1] != "nnet.formula") {
     stop("Error: Argument must be of class nnet")
   }
@@ -77,18 +75,6 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
   
   intnn$BIC <- (-2 * intnn$loglike) + (intnn$n_param * log(intnn$n))
   
-  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
-  colnames(eff_matrix) <- c("eff", "eff_se")
-  eff_matrix[, 1] <- sapply(1:intnn$n_inputs, function(ind) 
-    covariate_eff_pce(intnn$weights, X, intnn$n_nodes, ind = ind, 
-                      response = response))
-  
-  eff_matrix[, 2] <- sapply(1:intnn$n_inputs, function(ind) 
-    pce_average_delta_method(intnn$weights, X, y, intnn$n_nodes, ind = ind,
-                             alpha = alpha, lambda = lambda, response = response))
-  
-  intnn$eff <- eff_matrix
-  
   intnn$call <- match.call(expand.dots = TRUE)
   
   intnn$y <- object$fitted.values + object$residuals
@@ -103,9 +89,29 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
     colnames(intnn$y) <- as.character(object$terms[[2]])
   }
   
+  intnn$lambda <- object$decay
+  
   intnn$response <- response
   
-  intnn$lambda <- object$decay
+  eff_matrix <- matrix(data = NA, nrow = intnn$n_inputs, ncol = 2)
+  colnames(eff_matrix) <- c("eff", "eff_se")
+  
+  cov_eff <- covariate_eff_pce(intnn$weights, X, intnn$n_nodes,
+                               response = intnn$response)
+  
+  eff_matrix[, 1] <- cov_eff$eff
+  
+  vc <- VC(intnn$weights, X, intnn$y, intnn$n_nodes,
+           lambda = intnn$lambda, response = intnn$response)
+  
+  pred <- cov_eff$eff
+  gradient <- cov_eff$jaco
+  
+  var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
+  
+  eff_matrix[, 2] <- sqrt(diag(var_est))
+  
+  intnn$eff <- eff_matrix
   
   intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
                          lambda = intnn$lambda,
@@ -116,8 +122,6 @@ interpretnn.nnet <- function(object, X, B = 100, ...) {
                                         response = intnn$response)
   
   intnn$X <- X
-  
-  intnn$B <- B
   
   class(intnn) <- "interpretnn"
   

@@ -45,87 +45,32 @@ covariate_eff <- function(X, W, q, response = "continuous") {
 #' @param W Weight vector
 #' @param X Data
 #' @param q Number of hidden units
-#' @param ind Column index
+#' @param x_r x-axis range
+#' @param len number of breaks for x-axis
 #' @param d difference value
 #' @param response Response type: `"continuous"` (default) or
 #'  `"binary"`
 #' @return Effect for each input
 #' @noRd 
-covariate_eff_pce <- function(W, X, q, ind, d = "sd", response = "continuous") {
-  
-  X_new <- X
-  
-  if (all(levels(factor(X[, ind])) %in% c(0, 1)) &
-      length(levels(factor(X[, ind]))) == 2) {
+covariate_eff_pce <- function(W, X, q, x_r = c(-3, 3), len = 101, d = "sd",
+                              response = "continuous") {
+  eff <- rep(NA, ncol(X))
+  jaco <- matrix(NA, nrow = ncol(X), ncol = length(W))
+  for (col in 1:ncol(X)) {
+    pce_col <- pce(W, X, q, col, x_r = x_r, len = len, d = d,
+                   response = response)
+    eff[col] <- mean(pce_col$eff)
     
-    X_new[, ind] <- 0
-    pred_low <- nn_pred(X_new, W, q, response = response)
-    
-    X_new[, ind] <- 1
-    pred_high <- nn_pred(X_new, W, q, response = response)
-    
-    eff <- mean(pred_high - pred_low)
-    
-  } else {
-    
-    d_m <- matrix(0, ncol = ncol(X_new), nrow = nrow(X_new))
-    
-    if(d == "sd") {
-      d_m[, ind] <- stats::sd(X_new[, ind])
+    if (length(pce_col$eff) == 1) {
+      jaco[col, ] <- pce_col$jaco
     } else {
-      d_m[, ind] <- d
-    }
-    
-    x <- X_new[, ind]
-    
-    eff <- rep(NA, nrow(X_new))
-    
-    for (i in 1:length(x)) {
-      X_new[, ind] <- x[i]
-      eff[i] <- mean(nn_pred(X_new + d_m, W, q, response = response) -
-                       nn_pred(X_new, W, q, response = response))
+      jaco[col, ] <- apply(pce_col$jaco, 2, mean)
     }
   }
-  
-  average_pce <- mean(eff)
-  
-  return(average_pce)
+  names(eff) <- colnames(X)
+  return(list("eff" = eff, "jaco" = jaco))
 }
 
-#' Delta Method for average PCE effect
-#'
-#'
-#' @param W Weight vector
-#' @param X Data
-#' @param y Response
-#' @param q Number of hidden units
-#' @param ind Column index
-#' @param alpha significance level
-#' @param lambda Ridge penalty. Default is 0.
-#' @param response Response type: `"continuous"` (default) or
-#'  `"binary"`
-#' @return Effect for each input
-#' @noRd 
-pce_average_delta_method <- function(W, X, y, q, ind, alpha = 0.05,
-                                     lambda = 0, response = "continuous", ...) {
-  
-  vc <- VC(W, X, y, q, lambda = lambda, response = response)
-  
-  gradient <- numDeriv::jacobian(
-    func = covariate_eff_pce,
-    x = W,
-    X = X,
-    q = q,
-    ind = ind,
-    ...
-  )
-  
-  var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
-  
-  se <- sqrt(diag(var_est))
-  
-  return(se)
-}
 
 
 #' Perform m.l.e. simulation for a function FUN to calculate associated uncertainty
@@ -199,6 +144,46 @@ delta_method <- function(W, X, y, q, FUN, alpha = 0.05,
   var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
   
   pred <- FUN(W = W, X = X, q = q, ...)
+  
+  upper <- pred + stats::qnorm(1 - alpha / 2) * sqrt(diag(var_est))
+  lower <- pred + stats::qnorm(alpha / 2) * sqrt(diag(var_est))
+  
+  return(list("upper" = upper, "lower" = lower))
+}
+
+#' Perform delta method for pce and covariate_eff_pce
+#'
+#'
+#' @param W Weight vector
+#' @param X Data
+#' @param y Response
+#' @param q Number of hidden units
+#' @param which Which pce function (full or point)
+#' @param alpha significance level
+#' @param x_r x-axis range
+#' @param len number of breaks for x-axis
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @param ... additional arguments to FUN
+#' @return Effect for each input
+#' @noRd 
+delta_method_pce <- function(W, X, y, q, ind, which = "full", alpha = 0.05, x_r = c(-3, 3),
+                             len = 101, lambda = 0, response = "continuous", ...) {
+  
+  if (which == "full") {
+    pce <- pce(W = W, X = X, q = q, ind = ind, x_r = x_r, len = len, ...)
+  } else if (which == "point") {
+    pce <- covariate_eff_pce(W = W, X = X, q = q, x_r = x_r, len = len, ...)
+  }
+  vc <- VC(W, X, y, q, lambda = lambda, response = response)
+  
+  
+  
+  pred <- pce$eff
+  gradient <- pce$jaco
+  
+  var_est <- as.matrix(gradient) %*% vc %*% t(as.matrix(gradient))
   
   upper <- pred + stats::qnorm(1 - alpha / 2) * sqrt(diag(var_est))
   lower <- pred + stats::qnorm(alpha / 2) * sqrt(diag(var_est))

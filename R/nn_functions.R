@@ -206,3 +206,59 @@ nn_loglike <- function(object, X = NULL, y = NULL, lambda = 0,
 
   return(log_like)
 }
+
+
+#' Neural network gradient for one observation
+#'
+#'
+#' @param W Weight vector
+#' @param X Input vector
+#' @param q Number of hidden nodes
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @return Log-Likelihood value
+#' @noRd
+nn_grad_1 <- function(W, X, q, response = "continuous") {
+  
+  p <- length(X)
+  
+  X1 <- c(1, X)
+  
+  g <- W[(((p + 1) * q + 1):((p + 2) * q + 1))]
+  wt <- matrix(W[1:((p + 1) * q)], nrow = p + 1)
+  
+  H <- cbind(1, 1 / (1 + exp(-X1%*%wt)))
+  
+  if (response == "continuous") {
+    d1 <- X1 %*% (t(g[-1]) * sigmoid(X1%*%wt) * (1 - sigmoid(X1%*%wt)))
+    d2 <- H
+  } else if (response == "binary") {
+    d1 <- X1 %*% (t(g[-1]) * sigmoid(X1%*%wt) * (1 - sigmoid(X1%*%wt))) *
+      as.vector(sigmoid(H %*% g) * (1 - sigmoid(H %*% g)))
+    d2 <- t(H) %*% (sigmoid(H %*% g) * (1 - sigmoid(H %*% g)))
+  }
+  
+  grad <- c(as.vector(d1), d2) 
+  
+  return(grad)
+}
+
+#' Neural network gradient
+#'
+#'
+#' @param W Weight vector
+#' @param X Input vector
+#' @param q Number of hidden nodes
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @return Log-Likelihood value
+#' @export
+nn_grad <- function(W, X, q, response = "continuous") {
+  
+  X <- as.matrix(X)
+  
+  grad <- t(apply(X, 1, \(x) nn_grad_1(W, x, q, response = response)))
+  
+  return(grad)
+  
+}

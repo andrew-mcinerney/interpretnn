@@ -1,10 +1,10 @@
-pandoc: 2.19.2
-pkgdown: 2.0.7
+pandoc: 3.1.11
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   boston-example: boston-example.html
   casi-poster: web-only/casi-poster.html
-last_built: 2023-11-15T17:42Z
+last_built: 2024-06-26T10:44Z
 urls:
   reference: https://andrew-mcinerney.github.io/interpretnn/reference
   article: https://andrew-mcinerney.github.io/interpretnn/articles

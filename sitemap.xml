@@ -28,9 +28,6 @@
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/Boston.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/covariate_eff_pce.html</loc>
-  </url>
-  <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/index.html</loc>
   </url>
   <url>
@@ -40,7 +37,7 @@
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_fit.html</loc>
   </url>
   <url>
-    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_fit_nnet.html</loc>
+    <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_grad.html</loc>
   </url>
   <url>
     <loc>https://andrew-mcinerney.github.io/interpretnn/reference/nn_loglike.html</loc>

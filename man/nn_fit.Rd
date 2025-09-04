@@ -3,26 +3,11 @@
 \name{nn_fit}
 \alias{nn_fit}
 \alias{nn_fit.default}
-\alias{nn_fit.formula}
 \title{Fits various tracks (different random starting values) and chooses best model}
 \usage{
 nn_fit(...)
 
 \method{nn_fit}{default}(
-  x,
-  y,
-  q,
-  n_init,
-  inf_crit = "BIC",
-  lambda = 0,
-  response = "continuous",
-  unif = 3,
-  maxit = 1000,
-  pkg = "nnet",
-  ...
-)
-
-\method{nn_fit}{formula}(
   formula,
   data,
   q,
@@ -38,10 +23,6 @@ nn_fit(...)
 }
 \arguments{
 \item{...}{additional argument for nnet}
-
-\item{x}{Matrix of covariates}
-
-\item{y}{Vector of response}
 
 \item{q}{Number of hidden nodes}
 
@@ -62,10 +43,9 @@ nn_fit(...)
 \item{pkg}{Package for fitting neural network. One of \code{nnet} (default) or
 \code{torch}}
 
-\item{formula}{An object of class \code{"\link{formula}"}: a two-sided object
-with response on the left hand side and the model variables on the right hand side.}
+\item{x}{Matrix of covariates}
 
-\item{data}{A data frame containing the variables in the model}
+\item{y}{Vector of response}
 }
 \value{
 The best model from the different initialisations
@@ -80,8 +60,6 @@ initialisation.
 initialisation (1 if maxmium iterations reached, 0 if not).
 \item \code{nn} - optimal \code{nnet} object.
 }
-
-interpretnn object
 }
 \description{
 Fits n_init tracks with different initial values and decides on best model

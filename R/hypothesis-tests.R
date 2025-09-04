@@ -147,3 +147,46 @@ wald_single_parameter <- function (X, y, W, q, lambda = 0, response = "continuou
   
   return(list("chisq" = chisq, "p_value" = p_values, "ci" = ci))
 }
+
+#' Wald test for inputs
+#'
+#'
+#' @param X Data
+#' @param y Response
+#' @param W Weight vector
+#' @param q Number of hidden nodes
+#' @param lambda Ridge penalty. Default is 0.
+#' @param response Response type: `"continuous"` (default) or
+#'  `"binary"`
+#' @param alpha significance level for confidence interval
+#' @return Wald hypothesis test for each covariate
+#' @noRd 
+wald_test_cat <- function(X, y, W, q, inds, lambda = 0, response = "continuous") {
+  p <- ncol(X)
+  n <- nrow(X)
+  
+  k <- length(W)
+  
+  vc <- interpretnn:::VC(W, X, y, q, lambda = lambda, response = response)
+  
+  ind_vec <- c()
+  
+  for (i in inds) {
+    
+    ind_vec <- c(ind_vec, sapply(
+      X = 1:q[1],
+      FUN = function(x) (x - 1) * (p + 1) + 1 + i
+    ))
+  }
+  
+  ind_vec <- sort(ind_vec)
+  
+  theta_x <- W[ind_vec]
+  vc_inv_x <- solve(vc[ind_vec, ind_vec])
+  
+  chisq <- t(theta_x) %*% vc_inv_x %*% theta_x
+  
+  p_value <- 1 - stats::pchisq(chisq, df = q * length(inds))
+  
+  return(list("chisq" = chisq, "p_value" = p_value))
+}

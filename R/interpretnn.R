@@ -22,7 +22,8 @@ interpretnn <- function(...) UseMethod("interpretnn")
 #' @export
 interpretnn.default <- function(object,  ...) {
   
-  intnn <- interpretnn(object$nn, X = object$x, y = object$y, ...)
+  # intnn <- interpretnn(object$nn, data = object$data, ...)
+  intnn <- interpretnn.nnet(object$nn, data = object$data, ...)
   
   return(intnn)
 }
@@ -33,10 +34,17 @@ interpretnn.default <- function(object,  ...) {
 #' @param ... arguments passed to or from other methods
 #' @return interpretnn object
 #' @export
-interpretnn.nnet <- function(object, X, ...) {
+interpretnn.nnet <- function(object, data, ...) {
   if (class(object)[1] != "nnet" & class(object)[1] != "nnet.formula") {
     stop("Error: Argument must be of class nnet")
   }
+  
+  X <- stats::model.matrix(object$formula, data = data)[, -1] 
+  
+  y <- as.matrix(stats::model.extract(stats::model.frame(object$formula, data = data),
+                                      "response"), ncol = 1)
+  
+  colnames(y) <- as.character(object$terms[[2]])
   
   if (is.null(colnames(X))) {
     colnames(X) <- colnames(X, do.NULL = FALSE, prefix = deparse(substitute(X)))
@@ -44,8 +52,8 @@ interpretnn.nnet <- function(object, X, ...) {
   
   intnn_names <- c(
     "weights", "val", "n_inputs", "n_nodes", "n_layers",
-    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "X",
-    "y", "B", "response", "lambda"
+    "n_param", "n", "loglike", "BIC", "eff", "call", "wald", "wald_sp", "formula",
+    "data", "response", "lambda"
   )
   
   # NOTE: Will need to make more general for multiclass classification
@@ -101,7 +109,7 @@ interpretnn.nnet <- function(object, X, ...) {
   
   eff_matrix[, 1] <- cov_eff$eff
   
-  vc <- VC(intnn$weights, X, intnn$y, intnn$n_nodes,
+  vc <- VC(intnn$weights, X, y, intnn$n_nodes,
            lambda = intnn$lambda, response = intnn$response)
   
   pred <- cov_eff$eff
@@ -113,15 +121,16 @@ interpretnn.nnet <- function(object, X, ...) {
   
   intnn$eff <- eff_matrix
   
-  intnn$wald <- wald_test(X, intnn$y, intnn$weights, intnn$n_nodes, 
-                         lambda = intnn$lambda,
-                         response = intnn$response)
+  intnn$wald <- wald_test(X, y, intnn$weights, intnn$n_nodes, 
+                          lambda = intnn$lambda,
+                          response = intnn$response)
   
-  intnn$wald_sp <- wald_single_parameter(X, intnn$y, intnn$weights, intnn$n_nodes,
-                                        lambda = intnn$lambda,
-                                        response = intnn$response)
+  intnn$wald_sp <- wald_single_parameter(X, y, intnn$weights, intnn$n_nodes,
+                                         lambda = intnn$lambda,
+                                         response = intnn$response)
   
-  intnn$X <- X
+  intnn$formula <- object$formula
+  intnn$data <- data
   
   class(intnn) <- "interpretnn"
   

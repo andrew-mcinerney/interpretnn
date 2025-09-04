@@ -37,13 +37,13 @@ nn_fit <- function(...) UseMethod("nn_fit")
 #'   \item \code{nn} - optimal \code{nnet} object.
 #'   }
 #' @export
-nn_fit.default <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
-                   response = "continuous", unif = 3, maxit = 1000,
-                   pkg = "nnet", ...) {
+nn_fit.default <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
+                           response = "continuous", unif = 3, maxit = 1000,
+                           pkg = "nnet", ...) {
   
   if (pkg == "nnet") {
     
-    nn <- nn_fit_nnet(x = x, y = y, q = q, n_init = n_init, inf_crit = inf_crit,
+    nn <- nn_fit_nnet(formula, data, q = q, n_init = n_init, inf_crit = inf_crit,
                       lambda = lambda, response = response, unif = unif,
                       maxit = maxit, ...)
     
@@ -59,44 +59,44 @@ nn_fit.default <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
       pkg
     ))
   }
-  nn$x  <- x
-  nn$y <- y
+  nn$formula  <- nn$formula
+  nn$data <- nn$data
   return(nn)
 }
 
-#' @rdname nn_fit
-#' @param formula An object of class \code{"\link{formula}"}: a two-sided object
-#' with response on the left hand side and the model variables on the right hand side.
-#' @param data  A data frame containing the variables in the model
-#' @param q Number of hidden nodes
-#' @param n_init Number of random initialisations (tracks)
-#' @param inf_crit Information criterion: `"BIC"` (default), `"AIC"` or
-#'  `"AICc"`
-#' @param lambda Ridge penalty
-#' @param response Response type: `"continuous"` (default) or
-#'  `"binary"`
-#' @param unif Random initial values max value
-#' @param maxit Maximum number of iterations for nnet (default = 100)
-#' @param pkg Package for fitting neural network. One of `nnet` (default) or
-#' `torch`
-#' @param ... additional argument for nnet
-#' @return interpretnn object
-#' @export
-nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
-                           response = "continuous", unif = 3, maxit = 1000,
-                           pkg = "nnet", ...) {
-  
-  x <- stats::model.matrix(formula, data = data)[, -1] 
-  
-  y <- as.matrix(stats::model.extract(stats::model.frame(formula, data = data),
-                                      "response"), ncol = 1)
-  
-  nn <- nn_fit.default(x, y, q = q, n_init = n_init, inf_crit = inf_crit,
-                       lambda = lambda, response = response, unif = unif,
-                       maxit = maxit, ...)
-  
-  return(nn)
-}
+#' #' @rdname nn_fit
+#' #' @param formula An object of class \code{"\link{formula}"}: a two-sided object
+#' #' with response on the left hand side and the model variables on the right hand side.
+#' #' @param data  A data frame containing the variables in the model
+#' #' @param q Number of hidden nodes
+#' #' @param n_init Number of random initialisations (tracks)
+#' #' @param inf_crit Information criterion: `"BIC"` (default), `"AIC"` or
+#' #'  `"AICc"`
+#' #' @param lambda Ridge penalty
+#' #' @param response Response type: `"continuous"` (default) or
+#' #'  `"binary"`
+#' #' @param unif Random initial values max value
+#' #' @param maxit Maximum number of iterations for nnet (default = 100)
+#' #' @param pkg Package for fitting neural network. One of `nnet` (default) or
+#' #' `torch`
+#' #' @param ... additional argument for nnet
+#' #' @return interpretnn object
+#' #' @export
+#' nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
+#'                            response = "continuous", unif = 3, maxit = 1000,
+#'                            pkg = "nnet", ...) {
+#'   
+#'   x <- stats::model.matrix(formula, data = data)[, -1] 
+#'   
+#'   y <- as.matrix(stats::model.extract(stats::model.frame(formula, data = data),
+#'                                       "response"), ncol = 1)
+#'   
+#'   nn <- nn_fit.default(x, y, q = q, n_init = n_init, inf_crit = inf_crit,
+#'                        lambda = lambda, response = response, unif = unif,
+#'                        maxit = maxit, ...)
+#'   
+#'   return(nn)
+#' }
 
 #' Fits various tracks (different random starting values) and chooses best model
 #' using nnet
@@ -118,9 +118,14 @@ nn_fit.formula <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 
 #' @param ... additional argument for nnet
 #' @return The best model from the different tracks
 #' @noRd 
-nn_fit_nnet <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
+nn_fit_nnet <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
                         response = "continuous", unif = 3, maxit = 1000, ...) {
   # Function with fits n_init tracks of model and finds best
+  
+  x <- stats::model.matrix(formula, data = data)[, -1] 
+  
+  y <- as.matrix(stats::model.extract(stats::model.frame(formula, data = data),
+                                      "response"), ncol = 1)
   
   df <- data.frame(x, y)
   n <- nrow(x)
@@ -152,7 +157,7 @@ nn_fit_nnet <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
   }
   
   for (iter in 1:n_init) {
-    nn_model <- nnet::nnet(x = x, y = y, size = q, trace = FALSE,
+    nn_model <- nnet::nnet(y ~ ., data = df, size = q, trace = FALSE,
                            linout = linout, entropy = entropy,
                            Wts = weight_matrix_init[iter, ], maxit = maxit,
                            decay = lambda, ...
@@ -186,13 +191,16 @@ nn_fit_nnet <- function(x, y, q, n_init, inf_crit = "BIC", lambda = 0,
   
   nn <- nn[[which.min(inf_crit_vec)]]
   
+  nn$formula <- formula
+  
   return(list(
     "W_opt" = W_opt,
     "value" = min(inf_crit_vec),
     "inf_crit_vec" = inf_crit_vec,
     "weight_matrix" = weight_matrix,
     "convergence" = converge,
-    "nn" = nn 
+    "nn" = nn,
+    "data" = data
   ))
 }
 

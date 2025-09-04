@@ -15,7 +15,7 @@ interpretnn(...)
 
 interpretnn.default(object, ...)
 
-interpretnn.nnet(object, X, ...)
+interpretnn.nnet(object, data, ...)
 
 interpretnn.keras.engine.training.Model(object, X, y, B = 100, ...)
 

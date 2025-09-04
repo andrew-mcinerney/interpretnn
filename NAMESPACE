@@ -2,7 +2,6 @@
 
 S3method(coef,interpretnn)
 S3method(nn_fit,default)
-S3method(nn_fit,formula)
 S3method(plot,interpretnn)
 S3method(predict,interpretnn)
 S3method(print,interpretnn)

@@ -1,7 +1,7 @@
 #' Fits various tracks (different random starting values) and chooses best model
 #'
 #' Fits n_init tracks with different initial values and decides on best model
-#' based on information criteria.
+#' based on information criteria. 
 #'
 #' @rdname nn_fit
 #' @param ... arguments passed to or from other methods

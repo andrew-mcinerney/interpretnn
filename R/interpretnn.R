@@ -39,7 +39,7 @@ interpretnn.nnet <- function(object, data, ...) {
     stop("Error: Argument must be of class nnet")
   }
   
-  X <- stats::model.matrix(object$formula, data = data)[, -1] 
+  X <- stats::model.matrix(object$formula, data = data)[, -1, drop = FALSE] 
   
   y <- as.matrix(stats::model.extract(stats::model.frame(object$formula, data = data),
                                       "response"), ncol = 1)

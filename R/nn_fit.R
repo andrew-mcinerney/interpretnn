@@ -1,7 +1,7 @@
 #' Fits various tracks (different random starting values) and chooses best model
 #'
 #' Fits n_init tracks with different initial values and decides on best model
-#' based on information criteria. 
+#' based on information criteria.
 #'
 #' @rdname nn_fit
 #' @param ... arguments passed to or from other methods
@@ -122,7 +122,7 @@ nn_fit_nnet <- function(formula, data, q, n_init, inf_crit = "BIC", lambda = 0,
                         response = "continuous", unif = 3, maxit = 1000, ...) {
   # Function with fits n_init tracks of model and finds best
   
-  x <- stats::model.matrix(formula, data = data)[, -1] 
+  x <- stats::model.matrix(formula, data = data)[, -1, drop = FALSE] 
   
   y <- as.matrix(stats::model.extract(stats::model.frame(formula, data = data),
                                       "response"), ncol = 1)

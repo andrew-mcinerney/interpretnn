@@ -13,7 +13,7 @@ print.interpretnn <- function(x, ...) {
 
 #' @export
 coef.interpretnn <- function(object, ...) {
-  X <- stats::model.matrix(object$formula, data = object$data)[, -1] 
+  X <- stats::model.matrix(object$formula, data = object$data)[, -1, drop = FALSE] 
   
   y <- as.matrix(stats::model.extract(stats::model.frame(object$formula, data = object$data),
                                       "response"), ncol = 1)
@@ -46,9 +46,10 @@ coef.interpretnn <- function(object, ...) {
 }
 
 #' @export
-summary.interpretnn <- function(object, wald_single_par = FALSE, ...) {
+summary.interpretnn <- function(object, wald_single_par = FALSE,
+                                show_weights = FALSE, ...) {
   
-  X <- stats::model.matrix(object$formula, data = object$data)[, -1] 
+  X <- stats::model.matrix(object$formula, data = object$data)[, -1, drop = FALSE] 
   
   y <- as.matrix(stats::model.extract(stats::model.frame(object$formula, data = object$data),
                                       "response"), ncol = 1)
@@ -139,13 +140,17 @@ summary.interpretnn <- function(object, wald_single_par = FALSE, ...) {
     "Max" = max(resid)
   )
   
+  object$show_weights <- show_weights
+  
   class(object) <- c("summary.interpretnn", class(object))
   return(object)
 }
 
 #' @export
-print.summary.interpretnn <- function(x, ...) {
+print.summary.interpretnn <- function(x, show_weights, ...) {
   ## code to get wald in right place (may need editing later)
+  
+  if (missing(show_weights)) show_weights <- x$show_weights
 
   fdf <- format(x$coefdf)
   strings <- apply(x$coefdf, 2, function(x) unlist(format(x)))[1, ]
@@ -196,13 +201,16 @@ print.summary.interpretnn <- function(x, ...) {
   cat("---\nSignif. codes:  ", sleg, sep = "", fill = w +
     4 + max(nchar(sleg, "bytes") - nchar(sleg)))
   cat("\n")
-  cat("Weights:\n")
-  wts <- format(round(coef.interpretnn(x), 2))
-  # lapply(
-  #   split(wts, rep(1:(x$n_inputs + x$n_nodes + 2), diff(x$nconn))),
-  #   function(x) print(x, quote = FALSE)
-  # )
-  print(wts, quote = FALSE)
+  
+  if(show_weights) {
+    cat("Weights:\n")
+    wts <- format(round(coef.interpretnn(x), 2))
+    # lapply(
+    #   split(wts, rep(1:(x$n_inputs + x$n_nodes + 2), diff(x$nconn))),
+    #   function(x) print(x, quote = FALSE)
+    # )
+    print(wts, quote = FALSE)
+  }
 }
 
 #' @export
@@ -210,7 +218,7 @@ predict.interpretnn <- function(object, newdata, ...) {
   if (!inherits(object, "interpretnn")) 
     warning("calling predict.interpretnn(<fake-interpretnn-object>) ...")
   
-  X <- stats::model.matrix(object$formula, data = object$data)[, -1] 
+  X <- stats::model.matrix(object$formula, data = object$data)[, -1, drop = FALSE] 
   
   if (missing(newdata) || is.null(newdata)) {
     pred <- nn_pred(X, object$weights, object$n_nodes, object$response)
@@ -231,7 +239,7 @@ predict.interpretnn <- function(object, newdata, ...) {
 #' @export
 aov.interpretnn <- function(object,  ...) {
   
-  X <- stats::model.matrix(object$formula, data = object$data)[, -1] 
+  X <- stats::model.matrix(object$formula, data = object$data)[, -1, drop = FALSE] 
   
   y <- as.matrix(stats::model.extract(stats::model.frame(object$formula, data = object$data),
                                       "response"), ncol = 1)

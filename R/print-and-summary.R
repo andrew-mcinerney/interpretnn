@@ -349,7 +349,7 @@ print.summary.interpretnn <- function(x, ...) {
   ## code to get wald in right place (may need editing later)
   
   fdf <- format(x$coefdf)
-  strings <- apply(x$coefdf, 2, function(x) unlist(format(x)))[1, ]
+  strings <- as.matrix(format(x$coefdf))[1, ]
   rowname <- format(rownames(fdf))[[1]]
   strings <- c(rowname, strings)
   widths <- nchar(strings)
